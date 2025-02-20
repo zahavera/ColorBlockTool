@@ -480,4 +480,44 @@ function updateParams() {
     updateMaterial();
 }
 
+// Fix undo system to track all changes
+function saveState() {
+    const state = {
+        params: { ...params },  // Clone params object
+        background: {
+            r: document.getElementById('bgRed').value,
+            g: document.getElementById('bgGreen').value,
+            b: document.getElementById('bgBlue').value,
+            bright: document.getElementById('bgBright').value
+        }
+    };
+    
+    undoStack.push(state);
+    if (undoStack.length > maxUndoStates) {
+        undoStack.shift();
+    }
+    undoButton.disabled = false;
+}
+
+// Split reset into smaller chunks for better performance
+function resetInChunks() {
+    // Reset params first
+    Object.entries(defaults).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+            const numInput = document.getElementById(id + 'Num');
+            if (numInput) numInput.value = value;
+        }
+    });
+
+    // Update params
+    updateParams();
+
+    // Update background in next frame
+    requestAnimationFrame(() => {
+        updateBackground();
+    });
+}
+
 init();

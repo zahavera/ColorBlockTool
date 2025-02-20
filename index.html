@@ -378,6 +378,46 @@
                 height: 100%;
             }
         }
+
+        /* Update mobile styles for better fit */
+        @media (max-width: 768px) {
+            .controls.active {
+                width: 100%;
+                padding: 70px 8px 120px 8px;  /* Adjust padding */
+            }
+            .control-group {
+                grid-template-columns: 25px 90px 120px;  /* Make columns narrower */
+                padding: 11px 0;
+            }
+            .icon {
+                font-size: 16px;  /* Smaller icons */
+                width: 20px;
+                margin-left: 0;  /* Remove negative margin */
+            }
+            .view-buttons {
+                width: 120px;  /* Match grid column */
+            }
+            .view-buttons button {
+                padding: 5px 2px;  /* Reduce padding */
+                font-size: 10px;  /* Smaller font */
+                min-width: 35px;  /* Narrower buttons */
+            }
+            .version-group {
+                width: calc(100% - 16px);  /* Match controls width */
+                grid-template-columns: 25px 90px 120px;  /* Match control-group */
+                padding: 14px 8px;  /* Match controls padding */
+                right: 8px;  /* Align with controls */
+            }
+            .version-group .icon {
+                margin-left: 0;  /* Remove negative margin */
+            }
+            .version-group label {
+                font-size: 16px;  /* Smaller text */
+            }
+            .version-group span:last-child {
+                font-size: 16px;  /* Smaller text */
+            }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
@@ -522,7 +562,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.8.0</span>
+            <span>Rev 2.8.1</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
