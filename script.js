@@ -64,7 +64,7 @@ function init() {
     versionDiv.style.color = 'white';
     versionDiv.style.fontSize = '24px';
     versionDiv.style.fontFamily = 'Arial, sans-serif';
-    versionDiv.textContent = 'Rev 2.1';
+    versionDiv.textContent = 'Rev 2.1.1';  // Changed to include micro version
     document.body.appendChild(versionDiv);
 
     // GUI setup - fixed duplicate initialization
