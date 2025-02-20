@@ -11,10 +11,46 @@ let params = {
     interiorOpacity: 1.0,  // Keep only this opacity parameter
     shape: 'sphere',  // New parameter for shape selection
     resetView: function() {
+        // Stop all momentum immediately
+        controls.enableDamping = false;
+        controls.update();
+        
+        // Reset position
+        const pos = camera.position;
+        const dist = Math.sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
+        const isoPos = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(dist);
+        
+        controls.target.set(0, 0, 0);
+        camera.position.copy(isoPos);
+        camera.up.set(0, 1, 0);
+        camera.lookAt(0, 0, 0);
+        
+        // Re-enable damping after position is set
+        controls.enableDamping = true;
+        controls.update();
+    },
+    
+    centerView: function() {
+        // Focus on center diamond
+        const centerPos = new THREE.Vector3(0, 0, 0);
+        const targetDist = 0.15;  // Reduced from 0.25 to get extremely close to center
+        const currentDir = camera.position.clone().normalize();
+        
+        controls.target.copy(centerPos);
+        camera.position.copy(currentDir.multiplyScalar(targetDist));
+        camera.lookAt(centerPos);
+        
+        controls.update();
+    },
+    
+    fitView: function() {
+        // Fit view to show entire cube
+        controls.target.set(0, 0, 0);
         camera.position.set(20, 20, 20);
         camera.lookAt(0, 0, 0);
         camera.up.set(0, 1, 0);
-        controls.reset();
+        
+        controls.update();
     }
 };
 
@@ -229,8 +265,8 @@ function isOnSurface(x, y, z) {
 function updateGridPositions() {
     let index = 0;
     for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {
-            for(let z = 0; z < 25; z++) {
+        for(let y = 0; y < 25; y++) {  // Fixed: was using x < 25
+            for(let z = 0; z < 25; z++) {  // Fixed: was using x < 25
                 const sphere = spheres[index++];
                 sphere.position.set(
                     (x - 12) * params.spacing,

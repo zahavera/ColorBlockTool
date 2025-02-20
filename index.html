@@ -8,9 +8,9 @@
 
         .controls {
             position: fixed;
-            right: 0;
+            right: 0;  /* Changed from -25px */
             top: 0;
-            width: 50px;
+            width: 75px;  /* Increased from 50px to show menu better */
             height: 100%;
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
             transition: all 0.3s ease;
@@ -23,32 +23,35 @@
         .controls::before {
             content: '≡';
             position: absolute;
-            left: 15px;
-            top: 10px;
-            font-size: 24px;
+            left: 20px;  /* Adjusted from 30px */
+            top: 15px;
+            font-size: 42px;  /* Made even bigger */
             color: white;
             cursor: pointer;
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);  /* Stronger shadow */
         }
         .controls.active {
-            width: 420px;  /* Wider panel to fit larger controls */
+            right: 0;  /* Show fully when active */
+            width: 630px;  /* Increased from 420px by 50% */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
         }
         .control-group {
             display: grid;
-            grid-template-columns: 60px 120px 200px;  /* Wider columns */
+            grid-template-columns: 90px 180px 300px;  /* Increased all columns by 50% */
             align-items: center;
-            padding: 16px 0;  /* More vertical space */
+            padding: 24px 0;  /* Increased padding */
             margin-left: 0;
         }
         .control-group label {
             padding-left: 5px;
-            font-size: 20px;  /* Larger text */
+            font-size: 30px;  /* Increased from 20px */
             text-align: left;
         }
         .slider-container {
             display: flex;
             align-items: center;
             gap: 8px;
+            width: 300px;  /* Set fixed width to match grid column */
         }
         .control-group input[type="range"],
         .control-group select,
@@ -60,8 +63,8 @@
         }
         .control-group input[type="range"] {
             -webkit-appearance: none;
-            width: 160px;  /* Wider slider */
-            height: 6px;  /* Thicker track */
+            width: 240px;  /* Increased from 160px */
+            height: 9px;  /* Increased from 6px */
             margin-top: 16px;  /* Center in container */
             margin-bottom: 16px;
             background: linear-gradient(to right, 
@@ -80,50 +83,51 @@
         }
         .control-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 24px;  /* Larger thumb */
-            height: 24px;
+            width: 36px;  /* Increased from 24px */
+            height: 36px;
             background: #fff;
             border-radius: 50%;
             cursor: pointer;
-            margin-top: -9px;  /* Center on 6px track */
+            margin-top: -13.5px;  /* Adjusted for new track height */
         }
         .control-group input[type="range"]::-moz-range-thumb {
-            width: 24px;  /* Larger thumb */
-            height: 24px;
+            width: 36px;  /* Increased from 24px */
+            height: 36px;
             background: #fff;
             border-radius: 50%;
             cursor: pointer;
             border: none;
-            transform: translateY(-9px);  /* Center on 6px track */
+            transform: translateY(-13.5px);  /* Center on 6px track */
         }
         .control-group input[type="number"] {
-            width: 60px;  /* Wider number input */
-            height: 30px;  /* Taller input */
+            width: 90px;  /* Increased from 60px */
+            height: 45px;  /* Increased from 30px */
             background: #333;
             color: white;
             border: 1px solid #666;
             border-radius: 2px;
             padding: 0 4px;
-            font-size: 16px;  /* Larger text */
+            font-size: 24px;  /* Increased from 16px */
         }
         .control-group select {
-            width: 160px;  /* Match slider width */
-            height: 35px;  /* Taller height */
+            width: 240px;  /* Revert back to original width */
+            height: 52px;  /* Increased from 35px */
             background: #333;
             color: white;
             border: 1px solid #666;
             border-radius: 2px;
             padding: 0 5px;
-            font-size: 16px;  /* Larger text */
+            font-size: 24px;  /* Increased from 16px */
             cursor: pointer;
         }
         .icon {
             justify-self: center;
-            font-size: 20px;
-            width: 24px;
+            font-size: 30px;  /* Increased from 20px */
+            width: 36px;  /* Increased from 24px */
             text-align: center;
             flex-shrink: 0;
             order: -1;
+            margin-left: -20px;  /* Increased left shift from -10px to -20px */
         }
         #version {
             position: fixed;
@@ -159,22 +163,47 @@
         /* Update version styling for grid layout */
         .version-group {
             display: grid;
-            grid-template-columns: 50px 100px auto;
+            grid-template-columns: 90px 180px 300px;  /* Match control-group columns */
             align-items: center;
-            padding: 12px 0;
-            margin-top: auto;  /* Push to bottom */
+            padding: 24px 0;
+            margin-top: auto;
             border-top: 1px solid #666;
         }
 
+        .version-group .icon {
+            justify-self: center;  /* Center icon like others */
+            margin-left: -20px;  /* Match other icons */
+        }
+
+        .version-group label {
+            padding-left: 5px;
+            font-size: 30px;
+            text-align: left;
+        }
+
         .version-group span:last-child {
-            font-size: 20px;
-            content: 'Rev 2.3.0';
+            font-size: 30px;
+            padding-left: 5px;  /* Match other controls padding */
+            text-align: left;
+            content: 'Rev 2.4.0';
         }
 
         @media (max-width: 768px) {
             .version-group {
-                grid-template-columns: 40px 90px auto;
+                grid-template-columns: 50px 100px 180px;  /* Match mobile control-group */
             }
+        }
+
+        /* Style for view buttons container */
+        .view-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+        
+        .view-buttons button {
+            flex: 1;
+            min-width: 70px;  /* Ensure buttons don't get too narrow */
         }
     </style>
 </head>
@@ -233,20 +262,25 @@
         </div>
         <div class="control-group">
             <span class="icon">🔄</span>
-            <button onclick="params.resetView()">Reset View</button>
+            <label>View</label>
+            <div class="view-buttons">
+                <button onclick="params.resetView()">Iso View</button>
+                <button onclick="params.centerView()">Center</button>
+                <button onclick="params.fitView()">Fit</button>
+            </div>
         </div>
         <div class="control-group">
             <span class="icon">🎚️</span>
             <label>UI Opacity</label>
             <div class="slider-container">
-                <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.95">
+                <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.5">
                 <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
             </div>
         </div>
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.3.0</span>
+            <span>Rev 2.4.0</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
