@@ -21,6 +21,9 @@
             z-index: 1000;
             overflow-y: auto;  /* Enable vertical scrolling */
             padding-bottom: 120px; /* Add space for version at bottom */
+            opacity: 0;  /* Start hidden */
+            pointer-events: none;  /* Disable interaction when hidden */
+            transition: opacity 0.2s ease;  /* Only fade opacity */
         }
         .controls:not(.active) .control-content,
         .controls:not(.active) .version-group,
@@ -36,6 +39,9 @@
             width: 56px; /* Match the hamburger width */
             background: transparent; /* Make background transparent when closed */
             right: 15px; /* Add this line to move hamburger away from edge */
+            opacity: 0;
+            right: 0;  /* Stay in place */
+            background: transparent;
         }
         .controls:not(.active) .icon {
             display: none;
@@ -55,6 +61,9 @@
             cursor: pointer;
             text-shadow: 0 0 8px rgba(0,0,0,0.8);  /* Stronger shadow */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95)); /* Add background to hamburger only */
+            opacity: 1;  /* Always show hamburger */
+            pointer-events: all;  /* Always clickable */
+            z-index: 1001;  /* Ensure it's above the drawer */
         }
         
         /* Remove the reset circle button styles */
@@ -66,6 +75,8 @@
             right: 0;  /* Show fully when active */
             width: 630px;  /* Increased from 420px by 50% */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
+            opacity: 1;  /* Show when active */
+            pointer-events: all;  /* Enable interaction */
         }
         .control-group {
             display: grid;
@@ -598,7 +609,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.8.2</span>
+            <span>Rev 2.9.0</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -609,7 +620,7 @@
             const controls = document.querySelector('.controls');
             
             function toggleMenu(e) {
-                if (e.target === controls || e.clientX < 50) {
+                if (e.target === controls.querySelector(':before') || e.target === controls) {
                     e.preventDefault();
                     controls.classList.toggle('active');
                 }
