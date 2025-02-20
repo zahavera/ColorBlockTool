@@ -12,7 +12,7 @@
             top: 0;
             width: 50px;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,var(--drawer-opacity, 0.95));
             transition: all 0.3s ease;
             overflow: hidden;
             color: white;
@@ -30,18 +30,19 @@
             cursor: pointer;
         }
         .controls.active {
-            width: 350px;
+            width: 420px;  /* Wider panel to fit larger controls */
+            background: rgba(0,0,0,var(--drawer-opacity, 0.95));
         }
         .control-group {
             display: grid;
-            grid-template-columns: 50px 100px 170px;  /* Wider to accommodate input */
+            grid-template-columns: 60px 120px 200px;  /* Wider columns */
             align-items: center;
-            padding: 12px 0;
+            padding: 16px 0;  /* More vertical space */
             margin-left: 0;
         }
         .control-group label {
             padding-left: 5px;
-            font-size: 16px;
+            font-size: 20px;  /* Larger text */
             text-align: left;
         }
         .slider-container {
@@ -59,8 +60,8 @@
         }
         .control-group input[type="range"] {
             -webkit-appearance: none;
-            width: 120px;
-            height: 4px;  /* Increased track height */
+            width: 160px;  /* Wider slider */
+            height: 6px;  /* Thicker track */
             margin-top: 16px;  /* Center in container */
             margin-bottom: 16px;
             background: linear-gradient(to right, 
@@ -79,41 +80,41 @@
         }
         .control-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
+            width: 24px;  /* Larger thumb */
+            height: 24px;
             background: #fff;
             border-radius: 50%;
             cursor: pointer;
-            margin-top: -6px;  /* Center on 4px track */
+            margin-top: -9px;  /* Center on 6px track */
         }
         .control-group input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
+            width: 24px;  /* Larger thumb */
+            height: 24px;
             background: #fff;
             border-radius: 50%;
             cursor: pointer;
             border: none;
-            transform: translateY(-6px);  /* Center on 4px track */
+            transform: translateY(-9px);  /* Center on 6px track */
         }
         .control-group input[type="number"] {
-            width: 40px;
-            height: 20px;
+            width: 60px;  /* Wider number input */
+            height: 30px;  /* Taller input */
             background: #333;
             color: white;
             border: 1px solid #666;
             border-radius: 2px;
             padding: 0 4px;
-            font-size: 12px;
+            font-size: 16px;  /* Larger text */
         }
         .control-group select {
-            width: 120px;  /* Match slider width */
-            height: 25px;  /* Shorter height */
+            width: 160px;  /* Match slider width */
+            height: 35px;  /* Taller height */
             background: #333;
             color: white;
             border: 1px solid #666;
             border-radius: 2px;
             padding: 0 5px;
-            font-size: 14px;
+            font-size: 16px;  /* Larger text */
             cursor: pointer;
         }
         .icon {
@@ -138,11 +139,11 @@
                 width: 40px;
             }
             .controls.active {
-                width: 300px;
+                width: 100%;  /* Full width on mobile */
             }
             .control-group {
-                grid-template-columns: 40px 90px 160px;  /* Adjusted for mobile */
-                padding: 15px 10px 15px 45px;
+                grid-template-columns: 50px 100px 180px;  /* Adjusted for mobile */
+                padding: 16px 8px;
             }
             .control-group input[type="range"],
             .control-group select,
@@ -163,6 +164,11 @@
             padding: 12px 0;
             margin-top: auto;  /* Push to bottom */
             border-top: 1px solid #666;
+        }
+
+        .version-group span:last-child {
+            font-size: 20px;
+            content: 'Rev 2.3.0';
         }
 
         @media (max-width: 768px) {
@@ -229,10 +235,18 @@
             <span class="icon">🔄</span>
             <button onclick="params.resetView()">Reset View</button>
         </div>
+        <div class="control-group">
+            <span class="icon">🎚️</span>
+            <label>UI Opacity</label>
+            <div class="slider-container">
+                <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.95">
+                <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
+            </div>
+        </div>
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.2.0</span>
+            <span>Rev 2.3.0</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -271,6 +285,27 @@
                     num.value = e.target.value;
                 });
             });
+
+            // Add UI opacity control
+            const uiOpacity = document.getElementById('uiOpacity');
+            const uiOpacityNum = document.getElementById('uiOpacityNum');
+            const controlsPanel = document.querySelector('.controls');
+
+            uiOpacity.addEventListener('input', e => {
+                const value = e.target.value;
+                uiOpacityNum.value = value;
+                controlsPanel.style.setProperty('--drawer-opacity', value);
+            });
+
+            uiOpacityNum.addEventListener('input', e => {
+                const value = e.target.value;
+                uiOpacity.value = value;
+                controlsPanel.style.setProperty('--drawer-opacity', value);
+            });
+
+            // Initialize UI opacity
+            uiOpacityNum.value = uiOpacity.value;
+            controlsPanel.style.setProperty('--drawer-opacity', uiOpacity.value);
         });
     </script>
 </body>
