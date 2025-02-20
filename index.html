@@ -418,6 +418,42 @@
                 font-size: 16px;  /* Smaller text */
             }
         }
+
+        /* Update mobile styles for better centering */
+        @media (max-width: 768px) {
+            .controls.active {
+                width: 100%;
+                padding: 70px 15px 120px 15px;  /* Consistent padding */
+            }
+            .tab-buttons {
+                margin: 15px 0 20px 0;  /* Remove side margins */
+                padding: 0 15px;  /* Add padding to match controls */
+            }
+            .control-group {
+                grid-template-columns: 25px 85px 110px;  /* Adjust for better fit */
+                padding: 11px 15px;  /* Add side padding to match tabs */
+                margin: 0 -15px;  /* Negative margin to counter parent padding */
+                gap: 5px;  /* Add small gap between columns */
+            }
+            .slider-container {
+                width: 110px;  /* Match last column */
+            }
+            .control-group input[type="range"] {
+                width: 110px;  /* Match container */
+            }
+            .control-group select {
+                width: 110px;  /* Match container */
+            }
+            .view-buttons {
+                width: 110px;  /* Match column width */
+            }
+            .version-group {
+                width: 100%;
+                grid-template-columns: 25px 85px 110px;  /* Match control-group */
+                padding: 14px 30px;  /* Match total padding of controls */
+                right: 0;
+            }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
@@ -562,7 +598,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.8.1</span>
+            <span>Rev 2.8.2</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
