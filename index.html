@@ -6,6 +6,49 @@
     <style>
         body { margin: 0; }
         canvas { display: block; }
+        
+        /* DAT.GUI custom styling */
+        .dg.main {
+            font-size: 40px !important;
+            margin-right: 40px;
+            width: 800px !important;
+        }
+        .dg .c input[type=text],
+        .dg select {
+            font-size: 40px !important;
+            height: 70px !important;
+        }
+        .dg .c div.slider,
+        .dg .c .slider-fg {
+            height: 70px !important;
+        }
+        .dg .property-name {
+            font-size: 40px !important;
+            height: 70px !important;
+            line-height: 70px !important;
+            width: 60% !important;
+        }
+        .dg .cr.function {
+            height: 70px !important;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .dg.main {
+                width: 100% !important;
+                margin: 0 !important;
+                height: auto !important;
+            }
+            .dg .property-name {
+                width: 50% !important;
+            }
+            .dg.main.taller-than-window {
+                transform: none !important;
+            }
+            .dg.main .close-button {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
