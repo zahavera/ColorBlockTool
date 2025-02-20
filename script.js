@@ -56,6 +56,21 @@ function init() {
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = true;
 
+    // Add version display
+    const versionDiv = document.createElement('div');
+    versionDiv.style.position = 'absolute';
+    versionDiv.style.top = '10px';
+    versionDiv.style.left = '10px';
+    versionDiv.style.color = 'white';
+    versionDiv.style.fontSize = '24px';
+    versionDiv.style.fontFamily = 'Arial, sans-serif';
+    versionDiv.textContent = 'Rev 2.1';
+    document.body.appendChild(versionDiv);
+
+    // GUI setup
+    const gui = new dat.GUI();
+    gui.domElement.style.marginTop = '40px';  // Give space for version number
+
     // Replace old GUI with numeric inputs
     const gui = new dat.GUI({ name: 'ColorBlockTool Rev2.0' });  // Add version to title
     gui.domElement.style.marginTop = '10px';  // Add some spacing at top
