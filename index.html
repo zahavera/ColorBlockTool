@@ -17,15 +17,19 @@
             overflow: hidden;
             color: white;
             font-family: Arial, sans-serif;
-            padding: 20px 0;
+            padding: 70px 0 20px 0;  /* Increased top padding from 20px to 70px */
             z-index: 1000;
         }
         .controls::before {
             content: '≡';
             position: absolute;
-            left: 20px;  /* Adjusted from 30px */
-            top: 15px;
-            font-size: 42px;  /* Made even bigger */
+            left: 15px;
+            top: 10px;
+            font-size: 56px;  /* Increased from 42px */
+            line-height: 56px;  /* Added to control vertical spacing */
+            width: 56px;  /* Added to ensure click target is large */
+            height: 56px;  /* Added to ensure click target is large */
+            text-align: center;
             color: white;
             cursor: pointer;
             text-shadow: 0 0 8px rgba(0,0,0,0.8);  /* Stronger shadow */
@@ -185,7 +189,7 @@
             font-size: 30px;
             padding-left: 5px;  /* Match other controls padding */
             text-align: left;
-            content: 'Rev 2.4.0';
+            content: 'Rev 2.4.1';
         }
 
         @media (max-width: 768px) {
@@ -280,7 +284,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.4.0</span>
+            <span>Rev 2.4.1</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
