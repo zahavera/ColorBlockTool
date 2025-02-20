@@ -50,7 +50,7 @@
             content: '≡';
             position: fixed;  /* Change from absolute to fixed */
             left: auto; /* Remove left positioning */
-            right: 0;  /* Position on right side */
+            right: 15px;  /* Move hamburger from edge */
             top: 10px;
             font-size: 56px;  /* Increased from 42px */
             line-height: 56px;  /* Added to control vertical spacing */
@@ -66,7 +66,7 @@
             z-index: 1001;  /* Ensure it's above the drawer */
             opacity: 1 !important;  /* Force visibility */
             pointer-events: all !important;  /* Force clickable */
-            z-index: 1001;  /* Keep on top */
+            z-index: 2000 !important;  /* Ensure it's always on top */
             background: rgba(0,0,0,0.95);  /* Solid background */
         }
         
@@ -484,6 +484,26 @@
                 padding: 14px 25px;  /* Match control padding */
             }
         }
+
+        @media (max-width: 768px) {
+            .controls.active {
+                width: 100%;
+                padding: 70px 35px 120px 35px;  /* Increase padding further */
+            }
+            .tab-buttons {
+                margin: 15px -10px 20px -10px;  /* Negative margin to align with content */
+                padding: 0 45px;  /* Match control padding + extra */
+            }
+            .control-group {
+                grid-template-columns: 25px 85px 110px;
+                padding: 11px 0;
+                margin: 0;
+            }
+            .version-group {
+                padding: 14px 35px;  /* Match control padding */
+                margin: 0;
+            }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
@@ -628,7 +648,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.9.1</span>
+            <span>Rev 2.9.3</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
