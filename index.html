@@ -17,13 +17,34 @@
             overflow: hidden;
             color: white;
             font-family: Arial, sans-serif;
-            padding: 70px 0 20px 0;  /* Increased top padding from 20px to 70px */
+            padding: 70px 10px 20px 10px;  /* Add horizontal padding */
             z-index: 1000;
+            overflow-y: auto;  /* Enable vertical scrolling */
+            padding-bottom: 120px; /* Add space for version at bottom */
+        }
+        .controls:not(.active) .control-content,
+        .controls:not(.active) .version-group,
+        .controls:not(.active) .tab-buttons,
+        .controls:not(.active) .tab-content,
+        .controls:not(.active) .control-bar {  /* Add this line */
+            display: none;
+        }
+        
+        /* Make sure the hamburger menu is the only visible element when closed */
+        .controls:not(.active) {
+            overflow: hidden; /* Changed back to hidden */
+            width: 56px; /* Match the hamburger width */
+            background: transparent; /* Make background transparent when closed */
+            right: 15px; /* Add this line to move hamburger away from edge */
+        }
+        .controls:not(.active) .icon {
+            display: none;
         }
         .controls::before {
             content: '≡';
-            position: absolute;
-            left: 15px;
+            position: fixed;  /* Change from absolute to fixed */
+            left: auto; /* Remove left positioning */
+            right: 0;  /* Position on right side */
             top: 10px;
             font-size: 56px;  /* Increased from 42px */
             line-height: 56px;  /* Added to control vertical spacing */
@@ -33,7 +54,14 @@
             color: white;
             cursor: pointer;
             text-shadow: 0 0 8px rgba(0,0,0,0.8);  /* Stronger shadow */
+            background: rgba(0,0,0,var(--drawer-opacity, 0.95)); /* Add background to hamburger only */
         }
+        
+        /* Remove the reset circle button styles */
+        .controls::after {
+            display: none;
+        }
+        
         .controls.active {
             right: 0;  /* Show fully when active */
             width: 630px;  /* Increased from 420px by 50% */
@@ -172,6 +200,13 @@
             padding: 24px 0;
             margin-top: auto;
             border-top: 1px solid #666;
+            position: fixed;  /* Fix version to bottom */
+            bottom: 0;
+            right: 0;
+            width: 630px;  /* Match drawer width */
+            background: rgba(0,0,0,var(--drawer-opacity, 0.95));
+            padding: 20px 0;
+            margin: 0;
         }
 
         .version-group .icon {
@@ -189,7 +224,7 @@
             font-size: 30px;
             padding-left: 5px;  /* Match other controls padding */
             text-align: left;
-            content: 'Rev 2.6.0';
+            content: 'Rev 2.6.10';
         }
 
         @media (max-width: 768px) {
@@ -208,83 +243,237 @@
         .view-buttons button {
             flex: 1;
             min-width: 70px;  /* Ensure buttons don't get too narrow */
+            color: white;  /* Add this line */
+        }
+
+        /* Tab styles */
+        .tab-buttons {
+            display: flex;
+            margin: 15px 15px 20px 15px;
+            gap: 10px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            background: #333;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+        .tab-button.active {
+            background: #666;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Background color controls */
+        .bg-color-controls {
+            border-top: 1px solid #444;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        /* Add control bar for Random/Reset buttons */
+        .control-bar {
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            border-bottom: 1px solid #444;
+            justify-content: center; /* Center the buttons */
+        }
+        
+        .control-bar button {
+            flex: 0 1 auto; /* Don't grow, allow shrink, auto basis */
+            padding: 8px 20px;
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            min-width: 100px; /* Set minimum width */
+            max-width: 120px; /* Set maximum width */
+        }
+        
+        .control-bar button:hover {
+            background: #555;
+        }
+
+        /* Add iOS-specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            /* iOS-specific styles */
+            .controls {
+                -webkit-overflow-scrolling: touch; /* Enable momentum scrolling */
+            }
+            
+            /* Make inputs more iOS-friendly */
+            .control-group input[type="range"],
+            .control-group input[type="number"],
+            .control-group select,
+            .control-group button {
+                -webkit-appearance: none;
+                border-radius: 4px;
+                touch-action: manipulation; /* Prevent double-tap zoom */
+            }
+            
+            /* Prevent rubber-banding effect */
+            body {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+            }
         }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
     <div class="controls">
-        <div class="control-group">
-            <span class="icon">📏</span>
-            <label>Size</label>
-            <div class="slider-container">
-                <input type="range" id="ballSize" min="0.02" max="3" step="0.01" style="--nominal-position: 2%">
-                <input type="number" id="ballSizeNum" min="0.02" max="3" step="0.01">
+        <div class="control-bar">
+            <button onclick="randomizeControls()">Random</button>
+            <button id="resetDefaults">Reset</button>
+            <button id="undoButton" disabled>Undo</button>
+        </div>
+        
+        <div class="tab-buttons">
+            <button class="tab-button active" data-tab="color">Colors</button>
+            <button class="tab-button" data-tab="visual">Visual</button>
+            <button class="tab-button" data-tab="scene">Scene</button>
+        </div>
+        
+        <div class="tab-content active" id="color-tab">
+            <!-- Color related controls -->
+            <div class="control-group">
+                <span class="icon">🎨</span>
+                <label>Color Shift</label>
+                <div class="slider-container">
+                    <input type="range" id="colorShift" min="0" max="1" step="0.1" style="--nominal-position: 50%">
+                    <input type="number" id="colorShiftNum" min="0" max="1" step="0.1">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">🌟</span>
+                <label>Center Fade</label>
+                <div class="slider-container">
+                    <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
+                    <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">👁️</span>
+                <label>Fill Opacity</label>
+                <div class="slider-container">
+                    <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
+                    <input type="number" id="opacityNum" min="0" max="1" step="0.1">
+                </div>
+            </div>
+            <!-- Background color controls moved here -->
+            <div class="control-group">
+                <span class="icon">🔴</span>
+                <label>Red</label>
+                <div class="slider-container">
+                    <input type="range" id="bgRed" min="0" max="1" step="0.01" value="0">
+                    <input type="number" id="bgRedNum" min="0" max="1" step="0.01">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">🟢</span>
+                <label>Green</label>
+                <div class="slider-container">
+                    <input type="range" id="bgGreen" min="0" max="1" step="0.01" value="0">
+                    <input type="number" id="bgGreenNum" min="0" max="1" step="0.01">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">🔵</span>
+                <label>Blue</label>
+                <div class="slider-container">
+                    <input type="range" id="bgBlue" min="0" max="1" step="0.01" value="0">
+                    <input type="number" id="bgBlueNum" min="0" max="1" step="0.01">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">⚪</span>
+                <label>Brightness</label>
+                <div class="slider-container">
+                    <input type="range" id="bgBright" min="0" max="1" step="0.01" value="0">
+                    <input type="number" id="bgBrightNum" min="0" max="1" step="0.01">
+                </div>
             </div>
         </div>
-        <div class="control-group">
-            <span class="icon">↔️</span>
-            <label>Spacing</label>
-            <div class="slider-container">
-                <input type="range" id="spacing" min="0.1" max="1" step="0.05" style="--nominal-position: 30%">
-                <input type="number" id="spacingNum" min="0.1" max="1" step="0.05">
+
+        <div class="tab-content" id="visual-tab">
+            <!-- Size and spacing controls -->
+            <div class="control-group">
+                <span class="icon">📏</span>
+                <label>Size</label>
+                <div class="slider-container">
+                    <input type="range" id="ballSize" min="0.02" max="3" step="0.01" style="--nominal-position: 2%">
+                    <input type="number" id="ballSizeNum" min="0.02" max="3" step="0.01">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">↔️</span>
+                <label>Spacing</label>
+                <div class="slider-container">
+                    <input type="range" id="spacing" min="0.1" max="1" step="0.05" style="--nominal-position: 30%">
+                    <input type="number" id="spacingNum" min="0.1" max="1" step="0.05">
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="icon">🎚️</span>
+                <label>UI Opacity</label>
+                <div class="slider-container">
+                    <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.5">
+                    <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
+                </div>
             </div>
         </div>
-        <div class="control-group">
-            <span class="icon">🎨</span>
-            <label>Color Shift</label>
-            <div class="slider-container">
-                <input type="range" id="colorShift" min="-1" max="1" step="0.1" style="--nominal-position: 50%">
-                <input type="number" id="colorShiftNum" min="-1" max="1" step="0.1">
+
+        <div class="tab-content" id="scene-tab">
+            <!-- Shape, Material and View controls -->
+            <div class="control-group">
+                <span class="icon">📐</span>
+                <label>Shape</label>
+                <select id="shape">
+                    <option value="sphere">Sphere</option>
+                    <option value="diamond">Diamond</option>
+                    <option value="star">Star</option>
+                    <option value="box">Box</option>
+                    <option value="cross">Cross</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <span class="icon">✨</span>
+                <label>Material</label>
+                <select id="material">
+                    <option value="standard">Standard</option>
+                    <option value="metal">Metal</option>
+                    <option value="glass">Glass</option>
+                    <option value="plastic">Plastic</option>
+                    <option value="glossy">Glossy</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <span class="icon">🔄</span>
+                <label>View</label>
+                <div class="view-buttons">
+                    <button onclick="params.resetView()">Isometric</button>
+                    <button onclick="params.centerView()">Center</button>
+                    <button onclick="params.fitView()">Fit</button>
+                </div>
             </div>
         </div>
-        <div class="control-group">
-            <span class="icon">🌟</span>
-            <label>Center Fade</label>
-            <div class="slider-container">
-                <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
-                <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
-            </div>
-        </div>
-        <div class="control-group">
-            <span class="icon">👁️</span>
-            <label>Opacity</label>
-            <div class="slider-container">
-                <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
-                <input type="number" id="opacityNum" min="0" max="1" step="0.1">
-            </div>
-        </div>
-        <div class="control-group">
-            <span class="icon">📐</span>
-            <label>Shape</label>
-            <select id="shape">
-                <option value="sphere">Sphere</option>
-                <option value="diamond">Diamond</option>
-                <option value="star">Star</option>
-                <option value="box">Box</option>
-                <option value="cross">Cross</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <span class="icon">🔄</span>
-            <label>View</label>
-            <div class="view-buttons">
-                <button onclick="params.resetView()">Iso View</button>
-                <button onclick="params.centerView()">Center</button>
-                <button onclick="params.fitView()">Fit</button>
-            </div>
-        </div>
-        <div class="control-group">
-            <span class="icon">🎚️</span>
-            <label>UI Opacity</label>
-            <div class="slider-container">
-                <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.5">
-                <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
-            </div>
-        </div>
+
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.6.0</span>
+            <span>Rev 2.6.18</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -344,6 +533,170 @@
             // Initialize UI opacity
             uiOpacityNum.value = uiOpacity.value;
             controlsPanel.style.setProperty('--drawer-opacity', uiOpacity.value);
+
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Update active states
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                });
+            });
+
+            // Background color control
+            const bgControls = ['bgRed', 'bgGreen', 'bgBlue', 'bgBright'];
+            bgControls.forEach(controlId => {
+                const slider = document.getElementById(controlId);
+                const num = document.getElementById(controlId + 'Num');
+                
+                slider.addEventListener('input', updateBackground);
+                num.addEventListener('input', updateBackground);
+            });
+
+            function updateBackground() {
+                const r = parseFloat(document.getElementById('bgRed').value);
+                const g = parseFloat(document.getElementById('bgGreen').value);
+                const b = parseFloat(document.getElementById('bgBlue').value);
+                const bright = parseFloat(document.getElementById('bgBright').value);
+                
+                // Apply brightness adjustment (modified)
+                const adjustedR = Math.min(r + bright * (1 - r), 1);
+                const adjustedG = Math.min(g + bright * (1 - g), 1);
+                const adjustedB = Math.min(b + bright * (1 - b), 1);
+                
+                const color = new THREE.Color(adjustedR, adjustedG, adjustedB);
+                scene.background = color;
+                renderer.setClearColor(color);
+            }
+
+            // Initialize background color
+            updateBackground();
+
+            // Add randomization function
+            window.randomizeControls = function() {
+                // Save state before random changes
+                saveState();
+                
+                // Existing random controls
+                document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
+                document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
+                document.getElementById('colorShift').value = Math.random().toFixed(1);
+                document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
+                document.getElementById('opacity').value = Math.random().toFixed(1);
+
+                // Add material to random
+                const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
+                const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
+                document.getElementById('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
+                document.getElementById('material').value = materials[Math.floor(Math.random() * materials.length)];
+
+                // Update all controls including material
+                ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity', 'shape', 'material']
+                    .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+            };
+
+            // Replace default settings handler with new button handler
+            document.getElementById('resetDefaults').addEventListener('click', function() {
+                const defaults = {
+                    'ballSize': 0.06,
+                    'spacing': 0.3,
+                    'colorShift': 0.5,
+                    'centerGradient': 2.0,
+                    'opacity': 1.0,
+                    'shape': 'sphere',
+                    'material': 'standard', /* Add material default */
+                    'uiOpacity': 0.5,
+                    'bgRed': 0,
+                    'bgGreen': 0,
+                    'bgBlue': 0,
+                    'bgBright': 0
+                };
+
+                // Apply defaults to HTML elements
+                Object.entries(defaults).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = value;
+                        const numInput = document.getElementById(id + 'Num');
+                        if (numInput) numInput.value = value;
+                    }
+                });
+
+                // Update all THREE.js parameters and visuals
+                updateParams();
+                updateBackground();
+            });
+
+            // Add undo system
+            const undoStack = [];
+            const maxUndoStates = 20; // Store up to 20 states
+            const undoButton = document.getElementById('undoButton');
+
+            function saveState() {
+                const state = {
+                    ballSize: document.getElementById('ballSize').value,
+                    spacing: document.getElementById('spacing').value,
+                    colorShift: document.getElementById('colorShift').value,
+                    centerGradient: document.getElementById('centerGradient').value,
+                    opacity: document.getElementById('opacity').value,
+                    shape: document.getElementById('shape').value,
+                    material: document.getElementById('material').value,
+                    bgRed: document.getElementById('bgRed').value,
+                    bgGreen: document.getElementById('bgGreen').value,
+                    bgBlue: document.getElementById('bgBlue').value,
+                    bgBright: document.getElementById('bgBright').value
+                };
+                
+                undoStack.push(state);
+                if (undoStack.length > maxUndoStates) {
+                    undoStack.shift(); // Remove oldest state
+                }
+                undoButton.disabled = false;
+            }
+
+            // Add input event listeners for all controls
+            const controlIds = [
+                'ballSize', 'spacing', 'colorShift', 'centerGradient', 
+                'opacity', 'shape', 'material', 'bgRed', 'bgGreen', 'bgBlue', 'bgBright'
+            ];
+
+            controlIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const originalListener = element.oninput;
+                    element.addEventListener('change', () => {
+                        saveState();
+                    });
+                }
+            });
+
+            // Add undo button handler
+            undoButton.addEventListener('click', function() {
+                if (undoStack.length > 0) {
+                    const previousState = undoStack.pop();
+                    
+                    // Apply previous state
+                    Object.entries(previousState).forEach(([id, value]) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.value = value;
+                            const numInput = document.getElementById(id + 'Num');
+                            if (numInput) numInput.value = value;
+                            element.dispatchEvent(new Event('input'));
+                        }
+                    });
+
+                    undoButton.disabled = undoStack.length === 0;
+                }
+            });
         });
     </script>
 </body>

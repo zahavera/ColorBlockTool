@@ -10,6 +10,7 @@ let params = {
     centerGradient: 2.0,  // Changed default
     interiorOpacity: 1.0,  // Keep only this opacity parameter
     shape: 'sphere',  // New parameter for shape selection
+    material: 'standard',
     resetView: function() {
         // Stop all momentum immediately
         controls.enableDamping = false;
@@ -54,13 +55,57 @@ let params = {
     }
 };
 
+// Update SHAPES with lower poly counts
 const SHAPES = {
-    sphere: new THREE.SphereGeometry(1, 6, 4),  // Reduced segments
+    sphere: new THREE.SphereGeometry(1, 4, 3),  // Reduced segments further
     diamond: new THREE.OctahedronGeometry(1, 0),
     star: new THREE.TetrahedronGeometry(1, 0),
     box: new THREE.BoxGeometry(1, 1, 1),
-    cross: new THREE.BoxGeometry(1.5, 0.5, 0.5)  // Will combine 3 of these for a plus sign
+    hex: new THREE.CylinderGeometry(1, 1, 1, 6), // Hexagonal prism
+    cross: new THREE.BoxGeometry(1.5, 0.5, 0.5)  // Revert to original cross dimensions
 };
+
+// Add material definitions
+const MATERIALS = {
+    standard: {
+        metalness: 0.0,
+        roughness: 0.5,
+        clearcoat: 0.0,
+        transmission: 0.0,
+        opacity: 1.0
+    },
+    metal: {
+        metalness: 1.0,
+        roughness: 0.2,
+        clearcoat: 0.5,
+        transmission: 0.0,
+        opacity: 1.0
+    },
+    glass: {
+        metalness: 0.0,
+        roughness: 0.0,
+        clearcoat: 1.0,
+        transmission: 0.9,
+        opacity: 0.3
+    },
+    plastic: {
+        metalness: 0.0,
+        roughness: 0.3,
+        clearcoat: 0.7,
+        transmission: 0.0,
+        opacity: 1.0
+    },
+    glossy: {
+        metalness: 0.3,
+        roughness: 0.0,
+        clearcoat: 1.0,
+        transmission: 0.0,
+        opacity: 1.0
+    }
+};
+
+// Add material caching
+const materialCache = new Map(); // Cache for materials
 
 // Update corner colors to just use black and white
 const colors = {
@@ -100,16 +145,19 @@ function init() {
             colorShift: document.getElementById('colorShift'),
             centerGradient: document.getElementById('centerGradient'),
             opacity: document.getElementById('opacity'),
-            shape: document.getElementById('shape')
+            shape: document.getElementById('shape'),
+            material: document.getElementById('material')
         };
 
         // Set initial values
         inputs.ballSize.value = params.ballSize;
         inputs.spacing.value = params.spacing;
-        inputs.colorShift.value = params.colorShift;
+        inputs.colorShift.value = 0.5; // Start at middle (normal color)
+        params.colorShift = 0; // This corresponds to normal color internally
         inputs.centerGradient.value = params.centerGradient;
         inputs.opacity.value = params.interiorOpacity;
         inputs.shape.value = params.shape;
+        inputs.material.value = params.material;
 
         // Add listeners
         inputs.ballSize.addEventListener('input', e => {
@@ -121,7 +169,7 @@ function init() {
             updateGridPositions();
         });
         inputs.colorShift.addEventListener('input', e => {
-            params.colorShift = parseFloat(e.target.value);
+            params.colorShift = calculateColor(parseFloat(e.target.value));
             updateColors();
         });
         inputs.centerGradient.addEventListener('input', e => {
@@ -136,6 +184,10 @@ function init() {
             params.shape = e.target.value;
             updateShapes();
         });
+        inputs.material.addEventListener('change', e => {
+            params.material = e.target.value;
+            updateMaterial();
+        });
     }
 
     setupControls();
@@ -149,10 +201,11 @@ function shiftColor(color) {
     const white = new THREE.Color(0xFFFFFF);
     const black = new THREE.Color(0x000000);
     
-    if (params.colorShift > 0) {
-        return color.clone().lerp(white, params.colorShift);
-    } else if (params.colorShift < 0) {
-        return color.clone().lerp(black, -params.colorShift);
+    const shift = params.colorShift;
+    if (shift > 0) {
+        return color.clone().lerp(white, shift);
+    } else if (shift < 0) {
+        return color.clone().lerp(black, -shift);
     }
     return color.clone();
 }
@@ -200,14 +253,20 @@ function isInterior(x, y, z) {
            !(x === 12 && y === 12 && z === 12);
 }
 
+// Update material settings to handle clipping better
 function createGrid() {
     // Create shared geometries
     const centerGeometry = new THREE.OctahedronGeometry(1, 0);
     
-    // Create base material to clone from
-    const baseMaterial = new THREE.MeshPhongMaterial({
+    // Create base material with improved settings and physical properties
+    const baseMaterial = new THREE.MeshPhysicalMaterial({
         transparent: true,
-        opacity: 1.0
+        opacity: 1.0,
+        depthWrite: false, // Allow proper transparency
+        depthTest: true,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
     });
     
     for(let x = 0; x < 25; x++) {
@@ -254,6 +313,44 @@ function createGrid() {
     scene.add(light);
     
     updateGridPositions(); // Set initial positions and scale
+}
+
+// Update updateMaterial for better performance
+function updateMaterial() {
+    const materialType = params.material;
+    const properties = MATERIALS[materialType];
+    
+    let index = 0;
+    for(let x = 0; x < 25; x++) {
+        for(let y = 0; y < 25; y++) {
+            for(let z = 0; z < 25; z++) {
+                const object = spheres[index++];
+                if (object.material) {
+                    const isInt = isInterior(x, y, z);
+                    const cacheKey = `${materialType}_${isInt}`;
+                    
+                    // Try to get cached material
+                    if (!materialCache.has(cacheKey)) {
+                        const material = new THREE.MeshPhysicalMaterial({
+                            ...properties,
+                            transparent: isInt || materialType === 'glass',
+                            opacity: isInt ? params.interiorOpacity : 1.0,
+                            depthWrite: !isInt,
+                            depthTest: true,
+                            polygonOffset: true,
+                            polygonOffsetFactor: -1,
+                            polygonOffsetUnits: -1
+                        });
+                        materialCache.set(cacheKey, material);
+                    }
+                    
+                    // Use cached material and just update color
+                    object.material = materialCache.get(cacheKey).clone();
+                    object.material.color = lerp3Colors(x, y, z);
+                }
+            }
+        }
+    }
 }
 
 function isOnSurface(x, y, z) {
@@ -305,28 +402,30 @@ function updateOpacity() {
     }
 }
 
-// Add new function to update shapes
+// Update updateShapes to be more efficient
 function updateShapes() {
     let index = 0;
+    const crossTemplate = SHAPES.cross;
+    
     for(let x = 0; x < 25; x++) {
         for(let y = 0; y < 25; y++) {   // Fixed: was using x in condition
             for(let z = 0; z < 25; z++) {  // Fixed: was using x in condition
                 if (!(x === 12 && y === 12 && z === 12)) {
                     const oldShape = spheres[index];
-                    const material = oldShape.material;
+                    const oldMaterial = oldShape.material;
                     scene.remove(oldShape);
                     
                     let newShape;
                     if (params.shape === 'cross') {
                         newShape = new THREE.Group();
-                        const box1 = new THREE.Mesh(SHAPES.cross, material);
-                        const box2 = new THREE.Mesh(SHAPES.cross, material);
-                        const box3 = new THREE.Mesh(SHAPES.cross, material);
+                        const box1 = new THREE.Mesh(crossTemplate, oldMaterial);
+                        const box2 = new THREE.Mesh(crossTemplate, oldMaterial);
+                        const box3 = new THREE.Mesh(crossTemplate, oldMaterial);
                         box2.rotation.z = Math.PI/2;
                         box3.rotation.x = Math.PI/2;
                         newShape.add(box1, box2, box3);
                     } else {
-                        newShape = new THREE.Mesh(SHAPES[params.shape], material);
+                        newShape = new THREE.Mesh(SHAPES[params.shape], oldMaterial);
                     }
                     
                     newShape.position.copy(oldShape.position);
@@ -338,6 +437,9 @@ function updateShapes() {
             }
         }
     }
+    
+    // Ensure material properties are maintained
+    updateMaterial();
 }
 
 function onWindowResize() {
@@ -350,6 +452,32 @@ function animate() {
     requestAnimationFrame(animate);
     controls.update(); // Required for damping and auto-rotation
     renderer.render(scene, camera);
+}
+
+function calculateColor(colorShiftValue) {
+    // Convert 0-1 range to internal values where:
+    // 0 = black (-1)
+    // 0.5 = original color (0)
+    // 1 = white (1)
+    return (colorShiftValue - 0.5) * 2;
+}
+
+// Add updateParams function to ensure THREE.js parameters are in sync
+function updateParams() {
+    params.ballSize = parseFloat(document.getElementById('ballSize').value);
+    params.spacing = parseFloat(document.getElementById('spacing').value);
+    params.colorShift = calculateColor(parseFloat(document.getElementById('colorShift').value));
+    params.centerGradient = parseFloat(document.getElementById('centerGradient').value);
+    params.interiorOpacity = parseFloat(document.getElementById('opacity').value);
+    params.shape = document.getElementById('shape').value;
+    params.material = document.getElementById('material').value;
+
+    // Update everything
+    updateGridPositions();
+    updateColors();
+    updateOpacity();
+    updateShapes();
+    updateMaterial();
 }
 
 init();
