@@ -68,13 +68,14 @@
             pointer-events: all !important;  /* Force clickable */
             z-index: 2000 !important;  /* Ensure it's always on top */
             background: rgba(0,0,0,0.95);  /* Solid background */
+        }   visibility: visible !important;
         }
-        
         /* Remove the reset circle button styles */
-        .controls::after {
+        .controls::after {t circle button styles */
             display: none;
+        }   display: none;
         }
-        
+        .controls.active {
         .controls.active {
             right: 0;  /* Show fully when active */
             width: 630px;  /* Increased from 420px by 50% */
@@ -503,6 +504,16 @@
                 padding: 14px 35px;  /* Match control padding */
                 margin: 0;
             }
+            .control-group {
+                padding: 11px 45px;  /* Increase right padding */
+                margin: 0;
+            }
+            .icon {
+                margin-left: 15px;  /* Move icons right */
+            }
+            .slider-container {
+                margin-right: 15px;  /* Keep content from right edge */
+            }
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -524,111 +535,100 @@
         <div class="tab-content active" id="color-tab">
             <!-- Color related controls -->
             <div class="control-group">
-                <span class="icon">🎨</span>
-                <label>Color Shift</label>
-                <div class="slider-container">
+                    <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
+                    <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
+                </div>lass="slider-container">
                     <input type="range" id="colorShift" min="0" max="1" step="0.1" style="--nominal-position: 50%">
                     <input type="number" id="colorShiftNum" min="0" max="1" step="0.1">
                 </div>
             </div>
-            <div class="control-group">
-                <span class="icon">🌟</span>
-                <label>Center Fade</label>
-                <div class="slider-container">
-                    <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
-                    <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
-                </div>
-            </div>
-            <div class="control-group">
-                <span class="icon">👁️</span>
-                <label>Fill Opacity</label>
                 <div class="slider-container">
                     <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
                     <input type="number" id="opacityNum" min="0" max="1" step="0.1">
-                </div>
-            </div>
-            <!-- Background color controls moved here -->
+                </div>lass="slider-container">
+            </div>  <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
+            <!-- Background color controls moved here -->ntNum" min="0.1" max="5" step="0.1">
             <div class="control-group">
                 <span class="icon">🔴</span>
-                <label>Red</label>
+                <label>Red</label>oup">
                 <div class="slider-container">
                     <input type="range" id="bgRed" min="0" max="1" step="0.01" value="0">
                     <input type="number" id="bgRedNum" min="0" max="1" step="0.01">
-                </div>
-            </div>
+                </div>nput type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
+            </div>  <input type="number" id="opacityNum" min="0" max="1" step="0.1">
             <div class="control-group">
                 <span class="icon">🟢</span>
-                <label>Green</label>
+                <label>Green</label>ntrols moved here -->
                 <div class="slider-container">
                     <input type="range" id="bgGreen" min="0" max="1" step="0.01" value="0">
                     <input type="number" id="bgGreenNum" min="0" max="1" step="0.01">
-                </div>
-            </div>
-            <div class="control-group">
+                </div>lass="slider-container">
+            </div>  <input type="range" id="bgRed" min="0" max="1" step="0.01" value="0">
+            <div class="control-group">" id="bgRedNum" min="0" max="1" step="0.01">
                 <span class="icon">🔵</span>
                 <label>Blue</label>
                 <div class="slider-container">
                     <input type="range" id="bgBlue" min="0" max="1" step="0.01" value="0">
                     <input type="number" id="bgBlueNum" min="0" max="1" step="0.01">
-                </div>
-            </div>
-            <div class="control-group">
+                </div>lass="slider-container">
+            </div>  <input type="range" id="bgGreen" min="0" max="1" step="0.01" value="0">
+            <div class="control-group">" id="bgGreenNum" min="0" max="1" step="0.01">
                 <span class="icon">⚪</span>
                 <label>Brightness</label>
                 <div class="slider-container">
                     <input type="range" id="bgBright" min="0" max="1" step="0.01" value="0">
                     <input type="number" id="bgBrightNum" min="0" max="1" step="0.01">
+                </div>lass="slider-container">
+            </div>  <input type="range" id="bgBlue" min="0" max="1" step="0.01" value="0">
+        </div>      <input type="number" id="bgBlueNum" min="0" max="1" step="0.01">
                 </div>
-            </div>
-        </div>
-
         <div class="tab-content" id="visual-tab">
             <!-- Size and spacing controls -->
-            <div class="control-group">
+            <div class="control-group">pan>
                 <span class="icon">📏</span>
-                <label>Size</label>
-                <div class="slider-container">
+                <label>Size</label>container">
+                <div class="slider-container">Bright" min="0" max="1" step="0.01" value="0">
                     <input type="range" id="ballSize" min="0.02" max="3" step="0.01" style="--nominal-position: 2%">
                     <input type="number" id="ballSizeNum" min="0.02" max="3" step="0.01">
                 </div>
             </div>
             <div class="control-group">
-                <span class="icon">↔️</span>
-                <label>Spacing</label>
+                <span class="icon">↔️</span>tab">
+                <label>Spacing</label>rols -->
                 <div class="slider-container">
                     <input type="range" id="spacing" min="0.1" max="1" step="0.05" style="--nominal-position: 30%">
                     <input type="number" id="spacingNum" min="0.1" max="1" step="0.05">
-                </div>
-            </div>
-            <div class="control-group">
+                </div>lass="slider-container">
+            </div>  <input type="range" id="ballSize" min="0.02" max="3" step="0.01" style="--nominal-position: 2%">
+            <div class="control-group">" id="ballSizeNum" min="0.02" max="3" step="0.01">
                 <span class="icon">🎚️</span>
                 <label>UI Opacity</label>
                 <div class="slider-container">
                     <input type="range" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.5">
                     <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
+                </div>lass="slider-container">
+            </div>  <input type="range" id="spacing" min="0.1" max="1" step="0.05" style="--nominal-position: 30%">
+        </div>      <input type="number" id="spacingNum" min="0.1" max="1" step="0.05">
                 </div>
-            </div>
-        </div>
-
         <div class="tab-content" id="scene-tab">
             <!-- Shape, Material and View controls -->
-            <div class="control-group">
+            <div class="control-group">/span>
                 <span class="icon">📐</span>
-                <label>Shape</label>
-                <select id="shape">
-                    <option value="sphere">Sphere</option>
-                    <option value="diamond">Diamond</option>
+                <label>Shape</label>ontainer">
+                <select id="shape">nge" id="uiOpacity" min="0.1" max="1" step="0.05" value="0.5">
+                    <input type="number" id="uiOpacityNum" min="0.1" max="1" step="0.05">
+                </div>
                     <option value="star">Star</option>
                     <option value="box">Box</option>
                     <option value="cross">Cross</option>
-                </select>
-            </div>
+                </select>ontent" id="scene-tab">
+            </div>hape, Material and View controls -->
             <div class="control-group">
-                <span class="icon">✨</span>
+                <span class="icon">✨</span>>
                 <label>Material</label>
                 <select id="material">
-                    <option value="standard">Standard</option>
-                    <option value="metal">Metal</option>
+                    <option value="sphere">Sphere</option>
+                    <option value="metal">Metal</option>ion>
                     <option value="glass">Glass</option>
                     <option value="plastic">Plastic</option>
                     <option value="glossy">Glossy</option>
@@ -636,22 +636,33 @@
             </div>
             <div class="control-group">
                 <span class="icon">🔄</span>
-                <label>View</label>
+                <label>View</label>bel>
                 <div class="view-buttons">
                     <button onclick="params.resetView()">Isometric</button>
                     <button onclick="params.centerView()">Center</button>
                     <button onclick="params.fitView()">Fit</button>
-                </div>
+                </div>ption value="plastic">Plastic</option>
+                    <option value="glossy">Glossy</option>
+                </select>
             </div>
-        </div>
-
-        <div class="version-group">
+        <div class="version-group">up">
+                <span class="icon">🔄</span>
+                <label>View</label>
+            <span>Rev 2.9.4</span>uttons">
+                    <button onclick="params.resetView()">Isometric</button>
+                    <button onclick="params.centerView()">Center</button>
+                    <button onclick="params.fitView()">Fit</button>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="script.js"></script>
+    <script>v>
+        document.addEventListener('DOMContentLoaded', function() {
+            const controls = document.querySelector('.controls');
             <span class="icon">ℹ️</span>
-            <label>Version</label>
-            <span>Rev 2.9.3</span>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+            function toggleMenu(e) {
+                if (e.target === controls.querySelector(':before') || e.target === controls) {
+                    e.preventDefault();
+                    controls.classList.toggle('active');
+                }https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="script.js"></script>
     <script>
@@ -685,27 +696,27 @@
                 // Sync number to slider
                 slider.addEventListener('input', e => {
                     num.value = e.target.value;
-                });
+                controlsPanel.style.setProperty('--drawer-opacity', value);
             });
 
             // Add UI opacity control
-            const uiOpacity = document.getElementById('uiOpacity');
+                const value = e.target.value;mentById('uiOpacity');
             const uiOpacityNum = document.getElementById('uiOpacityNum');
             const controlsPanel = document.querySelector('.controls');
 
             uiOpacity.addEventListener('input', e => {
                 const value = e.target.value;
                 uiOpacityNum.value = value;
-                controlsPanel.style.setProperty('--drawer-opacity', value);
+            controlsPanel.style.setProperty('--drawer-opacity', uiOpacity.value);
             });
-
-            uiOpacityNum.addEventListener('input', e => {
-                const value = e.target.value;
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
                 uiOpacity.value = value;
                 controlsPanel.style.setProperty('--drawer-opacity', value);
             });
 
-            // Initialize UI opacity
+                    alize UI opacity
             uiOpacityNum.value = uiOpacity.value;
             controlsPanel.style.setProperty('--drawer-opacity', uiOpacity.value);
 
@@ -717,32 +728,32 @@
                 button.addEventListener('click', () => {
                     const tabName = button.getAttribute('data-tab');
                     
-                    // Update active states
+            bgControls.forEach(controlId => {
                     tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
+                const num = document.getElementById(controlId + 'Num');move('active'));
                     
                     button.classList.add('active');
                     document.getElementById(`${tabName}-tab`).classList.add('active');
                 });
             });
 
-            // Background color control
-            const bgControls = ['bgRed', 'bgGreen', 'bgBlue', 'bgBright'];
-            bgControls.forEach(controlId => {
-                const slider = document.getElementById(controlId);
-                const num = document.getElementById(controlId + 'Num');
-                
-                slider.addEventListener('input', updateBackground);
-                num.addEventListener('input', updateBackground);
-            });
-
-            function updateBackground() {
                 const r = parseFloat(document.getElementById('bgRed').value);
                 const g = parseFloat(document.getElementById('bgGreen').value);
                 const b = parseFloat(document.getElementById('bgBlue').value);
                 const bright = parseFloat(document.getElementById('bgBright').value);
-                
+                const num = document.getElementById(controlId + 'Num');
                 // Apply brightness adjustment (modified)
+                const adjustedR = Math.min(r + bright * (1 - r), 1);
+                const adjustedG = Math.min(g + bright * (1 - g), 1);
+                const adjustedB = Math.min(b + bright * (1 - b), 1);
+                
+                const color = new THREE.Color(adjustedR, adjustedG, adjustedB);
+                scene.background = color;ment.getElementById('bgRed').value);
+                renderer.setClearColor(color);getElementById('bgGreen').value);
+            }   const b = parseFloat(document.getElementById('bgBlue').value);
+                const bright = parseFloat(document.getElementById('bgBright').value);
+            // Initialize background color
+            updateBackground();ness adjustment (modified)
                 const adjustedR = Math.min(r + bright * (1 - r), 1);
                 const adjustedG = Math.min(g + bright * (1 - g), 1);
                 const adjustedB = Math.min(b + bright * (1 - b), 1);
@@ -751,37 +762,37 @@
                 scene.background = color;
                 renderer.setClearColor(color);
             }
-
-            // Initialize background color
-            updateBackground();
-
-            // Add randomization function
-            window.randomizeControls = function() {
-                // Save state before random changes
-                saveState();
-                
-                // Existing random controls
-                document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
                 document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
                 document.getElementById('colorShift').value = Math.random().toFixed(1);
                 document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
                 document.getElementById('opacity').value = Math.random().toFixed(1);
-
-                // Add material to random
+            // Add randomization function
+                // Add material to randomnction() {
                 const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
                 const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
                 document.getElementById('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
                 document.getElementById('material').value = materials[Math.floor(Math.random() * materials.length)];
-
-                // Update all controls including material
+                document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
+                // Update all controls including material= (Math.random() * 0.9 + 0.1).toFixed(2);
                 ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity', 'shape', 'material']
-                    .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
-            };
+                    .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));xed(1);
+            };  document.getElementById('opacity').value = Math.random().toFixed(1);
 
             // Replace default settings handler with new button handler
             document.getElementById('resetDefaults').addEventListener('click', function() {
-                const defaults = {
-                    'ballSize': 0.06,
+                const defaults = {['standard', 'metal', 'glass', 'plastic', 'glossy'];
+                    'ballSize': 0.06,Id('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
+                    'spacing': 0.3,ById('material').value = materials[Math.floor(Math.random() * materials.length)];
+                    'colorShift': 0.5,
+                    'centerGradient': 2.0,luding material
+                    'opacity': 1.0,ng', 'colorShift', 'centerGradient', 'opacity', 'shape', 'material']
+                    'shape': 'sphere',ument.getElementById(id).dispatchEvent(new Event('input')));
+                    'material': 'standard', /* Add material default */
+                    'uiOpacity': 0.5,
+                    'bgRed': 0,settings handler with new button handler
+            document.getElementById('resetDefaults').addEventListener('click', function() {
+                    'bgBlue': 0, {
+                    'bgBright': 0.06,
                     'spacing': 0.3,
                     'colorShift': 0.5,
                     'centerGradient': 2.0,
@@ -789,7 +800,7 @@
                     'shape': 'sphere',
                     'material': 'standard', /* Add material default */
                     'uiOpacity': 0.5,
-                    'bgRed': 0,
+                        const numInput = document.getElementById(id + 'Num');
                     'bgGreen': 0,
                     'bgBlue': 0,
                     'bgBright': 0
@@ -807,23 +818,23 @@
 
                 // Update all THREE.js parameters and visuals
                 updateParams();
-                updateBackground();
-            });
-
-            // Add undo system
-            const undoStack = [];
-            const maxUndoStates = 20; // Store up to 20 states
-            const undoButton = document.getElementById('undoButton');
-
-            function saveState() {
-                const state = {
-                    ballSize: document.getElementById('ballSize').value,
                     spacing: document.getElementById('spacing').value,
-                    colorShift: document.getElementById('colorShift').value,
+            });
                     centerGradient: document.getElementById('centerGradient').value,
                     opacity: document.getElementById('opacity').value,
                     shape: document.getElementById('shape').value,
                     material: document.getElementById('material').value,
+                    bgRed: document.getElementById('bgRed').value,');
+                    bgGreen: document.getElementById('bgGreen').value,
+                    bgBlue: document.getElementById('bgBlue').value,
+                    bgBright: document.getElementById('bgBright').value
+                };  ballSize: document.getElementById('ballSize').value,
+                    spacing: document.getElementById('spacing').value,
+                undoStack.push(state);nt.getElementById('colorShift').value,
+                if (undoStack.length > maxUndoStates) {ById('centerGradient').value,
+                    undoStack.shift(); // Remove oldest state').value,
+                }   shape: document.getElementById('shape').value,
+                undoButton.disabled = false;ementById('material').value,
                     bgRed: document.getElementById('bgRed').value,
                     bgGreen: document.getElementById('bgGreen').value,
                     bgBlue: document.getElementById('bgBlue').value,
@@ -835,7 +846,7 @@
                     undoStack.shift(); // Remove oldest state
                 }
                 undoButton.disabled = false;
-            }
+                    const originalListener = element.oninput;
 
             // Add input event listeners for all controls
             const controlIds = [
@@ -852,10 +863,10 @@
                     });
                 }
             });
-
-            // Add undo button handler
-            undoButton.addEventListener('click', function() {
-                if (undoStack.length > 0) {
+                            const numInput = document.getElementById(id + 'Num');
+                            if (numInput) numInput.value = value;
+                            element.dispatchEvent(new Event('input'));
+                        }tack.length > 0) {
                     const previousState = undoStack.pop();
                     
                     // Apply previous state
