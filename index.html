@@ -64,6 +64,10 @@
             opacity: 1;  /* Always show hamburger */
             pointer-events: all;  /* Always clickable */
             z-index: 1001;  /* Ensure it's above the drawer */
+            opacity: 1 !important;  /* Force visibility */
+            pointer-events: all !important;  /* Force clickable */
+            z-index: 1001;  /* Keep on top */
+            background: rgba(0,0,0,0.95);  /* Solid background */
         }
         
         /* Remove the reset circle button styles */
@@ -464,6 +468,21 @@
                 padding: 14px 30px;  /* Match total padding of controls */
                 right: 0;
             }
+            .controls.active {
+                width: 100%;
+                padding: 70px 25px 120px 25px;  /* Increase side padding */
+            }
+            .control-group {
+                grid-template-columns: 25px 85px 110px;
+                padding: 11px 0;
+                margin: 0;  /* Remove negative margin */
+            }
+            .tab-buttons {
+                padding: 0 25px;  /* Match control padding */
+            }
+            .version-group {
+                padding: 14px 25px;  /* Match control padding */
+            }
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -609,7 +628,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.9.0</span>
+            <span>Rev 2.9.1</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
