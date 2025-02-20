@@ -57,7 +57,9 @@ function init() {
     controls.screenSpacePanning = true;
 
     // Replace old GUI with numeric inputs
-    const gui = new dat.GUI();
+    const gui = new dat.GUI({ name: 'ColorBlockTool Rev2.0' });  // Add version to title
+    gui.domElement.style.marginTop = '10px';  // Add some spacing at top
+    
     gui.add(params, 'ballSize', 0.02, 3.0, 0.01).onChange(updateGridPositions);  // Changed max to 3.0
     gui.add(params, 'spacing', 0.1, 1.0, 0.05).onChange(updateGridPositions);
     gui.add(params, 'colorShift', -1, 1, 0.1).onChange(updateColors);

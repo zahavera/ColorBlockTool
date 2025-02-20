@@ -9,27 +9,45 @@
         
         /* DAT.GUI custom styling */
         .dg.main {
-            font-size: 40px !important;
-            margin-right: 40px;
-            width: 800px !important;
+            font-size: 24px !important;
+            margin-right: 20px;
+            width: 500px !important;
         }
-        .dg .c input[type=text],
-        .dg select {
-            font-size: 40px !important;
-            height: 70px !important;
+        .dg .c .slider {
+            float: left;
+            width: 66% !important;
+            margin-top: 2px !important;
+            height: 40px !important;
         }
-        .dg .c div.slider,
-        .dg .c .slider-fg {
-            height: 70px !important;
+        .dg li:not(.folder) {
+            height: 50px !important;
+            line-height: 50px !important;
+        }
+        .dg .c input[type=text] {
+            font-size: 24px !important;
+            height: 40px !important;
+            margin-top: 5px !important;
+        }
+        .dg .c select {
+            font-size: 24px !important;
+            height: 40px !important;
+            margin-top: 5px !important;
+            width: 66% !important;
         }
         .dg .property-name {
-            font-size: 40px !important;
-            height: 70px !important;
-            line-height: 70px !important;
-            width: 60% !important;
+            font-size: 24px !important;
+            height: 50px !important;
+            line-height: 50px !important;
+            padding-left: 15px !important;
+            width: 33% !important;
         }
-        .dg .cr.function {
-            height: 70px !important;
+        .dg .c .slider-fg {
+            height: 40px !important;
+        }
+        .dg.main .close-button {
+            height: 40px !important;
+            line-height: 40px !important;
+            font-size: 24px !important;
         }
         
         /* Mobile-specific adjustments */
@@ -37,16 +55,13 @@
             .dg.main {
                 width: 100% !important;
                 margin: 0 !important;
-                height: auto !important;
             }
             .dg .property-name {
-                width: 50% !important;
+                width: 40% !important;
             }
-            .dg.main.taller-than-window {
-                transform: none !important;
-            }
-            .dg.main .close-button {
-                display: none !important;
+            .dg .c .slider,
+            .dg .c select {
+                width: 55% !important;
             }
         }
     </style>
