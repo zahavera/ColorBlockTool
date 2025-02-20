@@ -176,10 +176,13 @@
             }
             .controls.active {
                 width: 100%;  /* Full width on mobile */
+                padding-left: 15px;  /* Add left padding */
+                padding-right: 15px; /* Add right padding */
             }
             .control-group {
-                grid-template-columns: 35px 126px 210px;  /* Reduced by 30% */
-                padding: 11px 6px;  /* Reduced padding */
+                grid-template-columns: 30px 100px 140px;  /* Adjusted columns to fit screen */
+                padding: 11px 0;  /* Remove horizontal padding */
+                margin-left: 0;
             }
             .control-group label {
                 font-size: 21px;  /* Reduced by 30% from 30px */
@@ -189,26 +192,31 @@
                 height: 6px;  /* Reduced by 30% */
             }
             .control-group input[type="number"] {
-                width: 63px;  /* Reduced by 30% from 90px */
+                width: 50px;  /* Make number inputs smaller */
                 height: 32px;  /* Reduced by 30% */
                 font-size: 17px;  /* Reduced by 30% */
             }
             .control-group select {
-                width: 168px;  /* Reduced by 30% from 240px */
+                width: 140px;  /* Match grid column width */
                 height: 36px;  /* Reduced by 30% */
                 font-size: 17px;  /* Reduced by 30% */
             }
             .icon {
-                font-size: 21px;  /* Reduced by 30% from 30px */
-                width: 25px;  /* Reduced by 30% */
+                font-size: 18px;  /* Slightly smaller icons */
+                width: 20px;
+                margin-left: -5px;  /* Reduce left margin */
             }
             .tab-button {
                 font-size: 13px;  /* Reduced by 30% */
                 padding: 7px;  /* Reduced by 30% */
             }
+            .view-buttons {
+                gap: 5px;  /* Reduce gap between buttons */
+            }
             .view-buttons button {
                 min-width: 49px;  /* Reduced by 30% */
                 font-size: 11px;  /* Reduced by 30% */
+                padding: 5px;  /* Reduce padding */
             }
             .control-bar button {
                 min-width: 70px;  /* Reduced by 30% */
@@ -217,11 +225,19 @@
                 padding: 6px 14px;  /* Reduced by 30% */
             }
             .version-group {
-                padding: 14px 0;  /* Reduced by 30% */
+                width: 100%;  /* Full width */
+                grid-template-columns: 30px 100px 140px;  /* Match control-group */
+                padding: 14px 15px;  /* Add horizontal padding */
             }
             .version-group label,
             .version-group span:last-child {
                 font-size: 21px;  /* Reduced by 30% */
+            }
+            .slider-container {
+                width: 140px;  /* Match grid column */
+            }
+            .control-group input[type="range"] {
+                width: 140px;  /* Match grid column */
             }
         }
 
@@ -506,7 +522,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.7.2</span>
+            <span>Rev 2.8.0</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
