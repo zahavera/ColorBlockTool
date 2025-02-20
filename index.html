@@ -2,84 +2,276 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <!-- Remove unused stylesheet -->
-    <!-- <link rel="stylesheet" href="./styles.css"> -->
     <style>
         body { margin: 0; }
         canvas { display: block; }
-        
-        /* DAT.GUI custom styling */
-        .dg.main {
-            font-size: 24px !important;
-            margin-right: 20px;
-            width: 500px !important;
+
+        .controls {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 50px;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px 0;
+            z-index: 1000;
         }
-        .dg .c .slider {
-            float: left;
-            width: 66% !important;
-            margin-top: 2px !important;
-            height: 40px !important;
+        .controls::before {
+            content: '≡';
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
         }
-        .dg li:not(.folder) {
-            height: 50px !important;
-            line-height: 50px !important;
+        .controls.active {
+            width: 350px;
         }
-        .dg .c input[type=text] {
-            font-size: 24px !important;
-            height: 40px !important;
-            margin-top: 5px !important;
+        .control-group {
+            display: grid;
+            grid-template-columns: 50px 100px 170px;  /* Wider to accommodate input */
+            align-items: center;
+            padding: 12px 0;
+            margin-left: 0;
         }
-        .dg .c select {
-            font-size: 24px !important;
-            height: 40px !important;
-            margin-top: 5px !important;
-            width: 66% !important;
+        .control-group label {
+            padding-left: 5px;
+            font-size: 16px;
+            text-align: left;
         }
-        .dg .property-name {
-            font-size: 24px !important;
-            height: 50px !important;
-            line-height: 50px !important;
-            padding-left: 15px !important;
-            width: 33% !important;
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .dg .c .slider-fg {
-            height: 40px !important;
+        .control-group input[type="range"],
+        .control-group select,
+        .control-group button {
+            width: 130px;
+            margin-left: 5px;
+            background: #333;
+            height: 35px;
         }
-        .dg.main .close-button {
-            height: 40px !important;
-            line-height: 40px !important;
-            font-size: 24px !important;
+        .control-group input[type="range"] {
+            -webkit-appearance: none;
+            width: 120px;
+            height: 4px;  /* Increased track height */
+            margin-top: 16px;  /* Center in container */
+            margin-bottom: 16px;
+            background: linear-gradient(to right, 
+                #666,
+                #666 var(--nominal-position, 50%),  /* Default to middle if not set */
+                #fff var(--nominal-position, 50%),
+                #fff calc(var(--nominal-position, 50%) + 4px),
+                #666 calc(var(--nominal-position, 50%) + 4px),
+                #666
+            );
+            border-radius: 1px;
+            outline: none;
+            position: relative;
+            top: 0;  /* Reset position */
+            margin: 0;  /* Reset margins */
         }
-        
-        /* Fix GUI closing functionality */
-        .dg.main.closed {
-            height: 0 !important;
-            visibility: hidden;
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px;  /* Center on 4px track */
         }
-        .dg.main.closed .close-button {
-            display: none !important;
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transform: translateY(-6px);  /* Center on 4px track */
         }
-        
-        /* Mobile-specific adjustments */
+        .control-group input[type="number"] {
+            width: 40px;
+            height: 20px;
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 2px;
+            padding: 0 4px;
+            font-size: 12px;
+        }
+        .control-group select {
+            width: 120px;  /* Match slider width */
+            height: 25px;  /* Shorter height */
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 2px;
+            padding: 0 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .icon {
+            justify-self: center;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+            order: -1;
+        }
+        #version {
+            position: fixed;
+            bottom: 10px;
+            right: 60px;
+            color: white;
+            font-size: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
         @media (max-width: 768px) {
-            .dg.main {
-                width: 100% !important;
-                margin: 0 !important;
+            .controls {
+                width: 40px;
             }
-            .dg .property-name {
-                width: 40% !important;
+            .controls.active {
+                width: 300px;
             }
-            .dg .c .slider,
-            .dg .c select {
-                width: 55% !important;
+            .control-group {
+                grid-template-columns: 40px 90px 160px;  /* Adjusted for mobile */
+                padding: 15px 10px 15px 45px;
+            }
+            .control-group input[type="range"],
+            .control-group select,
+            .control-group button {
+                width: 110px;
+            }
+            #version {
+                right: 50px;
+                font-size: 16px;
+            }
+        }
+
+        /* Update version styling for grid layout */
+        .version-group {
+            display: grid;
+            grid-template-columns: 50px 100px auto;
+            align-items: center;
+            padding: 12px 0;
+            margin-top: auto;  /* Push to bottom */
+            border-top: 1px solid #666;
+        }
+
+        @media (max-width: 768px) {
+            .version-group {
+                grid-template-columns: 40px 90px auto;
             }
         }
     </style>
 </head>
 <body>
+    <div class="controls">
+        <div class="control-group">
+            <span class="icon">📏</span>
+            <label>Size</label>
+            <div class="slider-container">
+                <input type="range" id="ballSize" min="0.02" max="3" step="0.01" style="--nominal-position: 2%">
+                <input type="number" id="ballSizeNum" min="0.02" max="3" step="0.01">
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="icon">↔️</span>
+            <label>Spacing</label>
+            <div class="slider-container">
+                <input type="range" id="spacing" min="0.1" max="1" step="0.05" style="--nominal-position: 30%">
+                <input type="number" id="spacingNum" min="0.1" max="1" step="0.05">
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="icon">🎨</span>
+            <label>Color Shift</label>
+            <div class="slider-container">
+                <input type="range" id="colorShift" min="-1" max="1" step="0.1" style="--nominal-position: 50%">
+                <input type="number" id="colorShiftNum" min="-1" max="1" step="0.1">
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="icon">🌟</span>
+            <label>Center Fade</label>
+            <div class="slider-container">
+                <input type="range" id="centerGradient" min="0.1" max="5" step="0.1" style="--nominal-position: 40%">
+                <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="icon">👁️</span>
+            <label>Opacity</label>
+            <div class="slider-container">
+                <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
+                <input type="number" id="opacityNum" min="0" max="1" step="0.1">
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="icon">📐</span>
+            <label>Shape</label>
+            <select id="shape">
+                <option value="sphere">Sphere</option>
+                <option value="diamond">Diamond</option>
+                <option value="star">Star</option>
+                <option value="box">Box</option>
+                <option value="cross">Cross</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <span class="icon">🔄</span>
+            <button onclick="params.resetView()">Reset View</button>
+        </div>
+        <div class="version-group">
+            <span class="icon">ℹ️</span>
+            <label>Version</label>
+            <span>Rev 2.2.0</span>
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="script.js"></script>  <!-- Remove ./ from path -->
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const controls = document.querySelector('.controls');
+            
+            function toggleMenu(e) {
+                if (e.target === controls || e.clientX < 50) {
+                    e.preventDefault();
+                    controls.classList.toggle('active');
+                }
+            }
+            
+            controls.addEventListener('click', toggleMenu);
+            controls.addEventListener('touchstart', toggleMenu);
+
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => {
+                const num = document.getElementById(slider.id + 'Num');
+                if (!num) return;
+                
+                // Initialize number input
+                num.value = slider.value;
+                
+                // Sync slider to number
+                num.addEventListener('input', e => {
+                    slider.value = e.target.value;
+                    slider.dispatchEvent(new Event('input'));
+                });
+                
+                // Sync number to slider
+                slider.addEventListener('input', e => {
+                    num.value = e.target.value;
+                });
+            });
+        });
+    </script>
 </body>
 </html>

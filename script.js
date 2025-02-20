@@ -56,74 +56,53 @@ function init() {
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = true;
 
-    // Add version display
-    const versionDiv = document.createElement('div');
-    versionDiv.style.position = 'absolute';
-    versionDiv.style.top = '10px';
-    versionDiv.style.left = '10px';
-    versionDiv.style.color = 'white';
-    versionDiv.style.fontSize = '24px';
-    versionDiv.style.fontFamily = 'Arial, sans-serif';
-    versionDiv.textContent = 'Rev 2.1.3';  // Incremented micro version
-    document.body.appendChild(versionDiv);
+    // Remove GUI setup and replace with custom controls
+    function setupControls() {
+        const inputs = {
+            ballSize: document.getElementById('ballSize'),
+            spacing: document.getElementById('spacing'),
+            colorShift: document.getElementById('colorShift'),
+            centerGradient: document.getElementById('centerGradient'),
+            opacity: document.getElementById('opacity'),
+            shape: document.getElementById('shape')
+        };
 
-    // GUI setup - fixed duplicate initialization
-    const gui = new dat.GUI({ name: 'ColorBlockTool' });
-    gui.domElement.style.marginTop = '40px';  // Give space for version number
-    
-    gui.add(params, 'ballSize', 0.02, 3.0, 0.01).onChange(updateGridPositions);  // Changed max to 3.0
-    gui.add(params, 'spacing', 0.1, 1.0, 0.05).onChange(updateGridPositions);
-    gui.add(params, 'colorShift', -1, 1, 0.1).onChange(updateColors);
-    gui.add(params, 'centerGradient', 0.1, 5.0, 0.1).name('Center Fade').onChange(updateColors);
-    gui.add(params, 'interiorOpacity', 0, 1, 0.1).name('Interior Opacity').onChange(updateOpacity);
-    gui.add(params, 'shape', ['sphere', 'diamond', 'star', 'box', 'cross']).onChange(updateShapes);
-    gui.add(params, 'resetView').name('Isometric View');
+        // Set initial values
+        inputs.ballSize.value = params.ballSize;
+        inputs.spacing.value = params.spacing;
+        inputs.colorShift.value = params.colorShift;
+        inputs.centerGradient.value = params.centerGradient;
+        inputs.opacity.value = params.interiorOpacity;
+        inputs.shape.value = params.shape;
 
-    // Add keyboard controls
-    window.addEventListener('keydown', (event) => {
-        if (event.ctrlKey) {
-            let updated = true;
-            switch(event.key) {
-                case 'ArrowUp':
-                    params.colorShift = Math.min(1, params.colorShift + params.colorStep);
-                    break;
-                case 'ArrowDown':
-                    params.colorShift = Math.max(-1, params.colorShift - params.colorStep);
-                    break;
-                default:
-                    updated = false;
-            }
-            if (updated) {
-                gui.updateDisplay();
-                updateColors();
-                event.preventDefault();
-            }
-        } else {
-            switch(event.key) {
-                case 'ArrowLeft':
-                    params.ballSize = Math.max(0.02, params.ballSize - params.sizeStep);
-                    gui.updateDisplay();
-                    updateGridPositions();
-                    break;
-                case 'ArrowRight':
-                    params.ballSize = Math.min(3.0, params.ballSize + params.sizeStep);  // Changed max to 3.0
-                    gui.updateDisplay();
-                    updateGridPositions();
-                    break;
-                case 'ArrowUp':
-                    params.spacing = Math.min(1.0, params.spacing + params.spacingStep);
-                    gui.updateDisplay();
-                    updateGridPositions();
-                    break;
-                case 'ArrowDown':
-                    params.spacing = Math.max(0.1, params.spacing - params.spacingStep);
-                    gui.updateDisplay();
-                    updateGridPositions();
-                    break;
-            }
-        }
-    });
+        // Add listeners
+        inputs.ballSize.addEventListener('input', e => {
+            params.ballSize = parseFloat(e.target.value);
+            updateGridPositions();
+        });
+        inputs.spacing.addEventListener('input', e => {
+            params.spacing = parseFloat(e.target.value);
+            updateGridPositions();
+        });
+        inputs.colorShift.addEventListener('input', e => {
+            params.colorShift = parseFloat(e.target.value);
+            updateColors();
+        });
+        inputs.centerGradient.addEventListener('input', e => {
+            params.centerGradient = parseFloat(e.target.value);
+            updateColors();
+        });
+        inputs.opacity.addEventListener('input', e => {
+            params.interiorOpacity = parseFloat(e.target.value);
+            updateOpacity();
+        });
+        inputs.shape.addEventListener('change', e => {
+            params.shape = e.target.value;
+            updateShapes();
+        });
+    }
 
+    setupControls();
     createGrid();
     
     window.addEventListener('resize', onWindowResize, false);
@@ -196,7 +175,7 @@ function createGrid() {
     });
     
     for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {  // Fixed: was using x < 25
+        for(let y = 0; y < 25; y++) {  // Fixed: was using x in condition
             for(let z = 0; z < 25; z++) {
                 const material = baseMaterial.clone();
                 material.transparent = isInterior(x, y, z);
