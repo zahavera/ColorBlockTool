@@ -178,17 +178,50 @@
                 width: 100%;  /* Full width on mobile */
             }
             .control-group {
-                grid-template-columns: 50px 100px 180px;  /* Adjusted for mobile */
-                padding: 16px 8px;
+                grid-template-columns: 35px 126px 210px;  /* Reduced by 30% */
+                padding: 11px 6px;  /* Reduced padding */
             }
-            .control-group input[type="range"],
-            .control-group select,
-            .control-group button {
-                width: 110px;
+            .control-group label {
+                font-size: 21px;  /* Reduced by 30% from 30px */
             }
-            #version {
-                right: 50px;
-                font-size: 16px;
+            .control-group input[type="range"] {
+                width: 168px;  /* Reduced by 30% from 240px */
+                height: 6px;  /* Reduced by 30% */
+            }
+            .control-group input[type="number"] {
+                width: 63px;  /* Reduced by 30% from 90px */
+                height: 32px;  /* Reduced by 30% */
+                font-size: 17px;  /* Reduced by 30% */
+            }
+            .control-group select {
+                width: 168px;  /* Reduced by 30% from 240px */
+                height: 36px;  /* Reduced by 30% */
+                font-size: 17px;  /* Reduced by 30% */
+            }
+            .icon {
+                font-size: 21px;  /* Reduced by 30% from 30px */
+                width: 25px;  /* Reduced by 30% */
+            }
+            .tab-button {
+                font-size: 13px;  /* Reduced by 30% */
+                padding: 7px;  /* Reduced by 30% */
+            }
+            .view-buttons button {
+                min-width: 49px;  /* Reduced by 30% */
+                font-size: 11px;  /* Reduced by 30% */
+            }
+            .control-bar button {
+                min-width: 70px;  /* Reduced by 30% */
+                max-width: 84px;  /* Reduced by 30% */
+                font-size: 11px;  /* Reduced by 30% */
+                padding: 6px 14px;  /* Reduced by 30% */
+            }
+            .version-group {
+                padding: 14px 0;  /* Reduced by 30% */
+            }
+            .version-group label,
+            .version-group span:last-child {
+                font-size: 21px;  /* Reduced by 30% */
             }
         }
 
@@ -473,7 +506,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.6.18</span>
+            <span>Rev 2.7.2</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
