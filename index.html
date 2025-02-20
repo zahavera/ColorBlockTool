@@ -50,6 +50,15 @@
             font-size: 24px !important;
         }
         
+        /* Fix GUI closing functionality */
+        .dg.main.closed {
+            height: 0 !important;
+            visibility: hidden;
+        }
+        .dg.main.closed .close-button {
+            display: none !important;
+        }
+        
         /* Mobile-specific adjustments */
         @media (max-width: 768px) {
             .dg.main {
