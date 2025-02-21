@@ -124,6 +124,36 @@ const colors = {
     CENTER: new THREE.Color(0xFFFFFF) // White (center)
 };
 
+// Move PRESETS to top of file, before init()
+const PRESETS = [
+    {
+        // Default preset
+        ballSize: 0.3,
+        spacing: 0.3,
+        colorShift: 0.5,
+        centerGradient: 3.0,
+        opacity: 0.0,
+        shape: 'box',
+        material: 'plastic',
+        lightIntensity: 0.5,
+        centerLight: 1.0
+    },
+    {
+        // Metal spheres preset
+        ballSize: 0.5,
+        spacing: 0.8,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 1.0,
+        shape: 'sphere',
+        material: 'metal',
+        lightIntensity: 0.2,
+        centerLight: 5.0
+    }
+];
+
+let currentPreset = 0;
+
 function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
@@ -252,6 +282,27 @@ function init() {
         light.lookAt(0, 0, 0);
         scene.add(light);
         return light;
+    });
+
+    // Add reset handler
+    document.getElementById('resetDefaults').addEventListener('click', function() {
+        currentPreset = (currentPreset + 1) % PRESETS.length;
+        const preset = PRESETS[currentPreset];
+        
+        // Apply preset to HTML elements
+        Object.entries(preset).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value;
+                const numInput = document.getElementById(id + 'Num');
+                if (numInput) numInput.value = value;
+                element.dispatchEvent(new Event('change'));
+                element.dispatchEvent(new Event('input'));  // Add this line
+            }
+        });
+
+        // Update all THREE.js parameters and visuals
+        updateParams();
     });
 }
 
@@ -445,7 +496,7 @@ function updateGridPositions() {
 function updateColors() {
     let index = 0;
     for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {   // Fixed: was using x < 25
+        for(let y = 0;  y < 25; y++) {   // Fixed: was using x < 25
             for(let z = 0;  z < 25; z++) {
                 const sphere = spheres[index++];
                 sphere.material.color = lerp3Colors(x, y, z);
@@ -565,76 +616,5 @@ window.randomizeControls = function() {
     undoStack.push(previousState);
     undoButton.disabled = false;
 };
-
-// Update default settings
-document.getElementById('resetDefaults').addEventListener('click', function() {
-    const defaults = {
-        'ballSize': 0.3,
-        'spacing': 0.3,
-        'colorShift': 0.5,
-        'centerGradient': 3.0,
-        'opacity': 0.0,
-        'shape': 'box',
-        'material': 'plastic',
-        'uiOpacity': 0.0,
-        'bgRed': 0,
-        'bgGreen': 0,
-        'bgBlue': 0,
-        'bgBright': 0,
-        'lightIntensity': 0.5,
-        'centerLight': 1.0
-    };
-
-    // ... rest of reset function ...
-});
-
-const PRESETS = [
-    {
-        // Default preset
-        ballSize: 0.3,
-        spacing: 0.3,
-        colorShift: 0.5,
-        centerGradient: 3.0,
-        opacity: 0.0,
-        shape: 'box',
-        material: 'plastic',
-        lightIntensity: 0.5,
-        centerLight: 1.0
-    },
-    {
-        // Metal spheres preset
-        ballSize: 0.5,
-        spacing: 0.8,
-        colorShift: 0.5,
-        centerGradient: 5.0,
-        opacity: 1.0,
-        shape: 'sphere',
-        material: 'metal',
-        lightIntensity: 0.2,
-        centerLight: 5.0
-    }
-];
-
-let currentPreset = 0;
-
-// Update reset handler
-document.getElementById('resetDefaults').addEventListener('click', function() {
-    currentPreset = (currentPreset + 1) % PRESETS.length;
-    const preset = PRESETS[currentPreset];
-    
-    // Apply preset to HTML elements
-    Object.entries(preset).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.value = value;
-            const numInput = document.getElementById(id + 'Num');
-            if (numInput) numInput.value = value;
-            element.dispatchEvent(new Event('change'));
-        }
-    });
-
-    // Update all THREE.js parameters and visuals
-    updateParams();
-});
 
 init();
