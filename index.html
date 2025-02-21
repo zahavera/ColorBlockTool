@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Color Block Tool</title>
+    <!-- Define version in one place -->
+    <script>const APP_VERSION = "2.7.8";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -76,7 +78,7 @@
         }
         .control-group label {
             padding-left: 5px;
-            font-size: 30px;  /* Increased from 20px */
+            font-size: 20px;  /* Reduced from 24px */
             text-align: left;
         }
         .slider-container {
@@ -95,7 +97,7 @@
         }
         .control-group input[type="range"] {
             -webkit-appearance: none;
-            width: 240px;  /* Increased from 160px */
+            width: 200px;  /* Reduced from 240px */
             height: 9px;  /* Increased from 6px */
             margin-top: 16px;  /* Center in container */
             margin-bottom: 16px;
@@ -182,10 +184,10 @@
                 padding: 11px 6px;  /* Reduced padding */
             }
             .control-group label {
-                font-size: 21px;  /* Reduced by 30% from 30px */
+                font-size: 17px;  /* Reduced from 21px */
             }
             .control-group input[type="range"] {
-                width: 168px;  /* Reduced by 30% from 240px */
+                width: 140px;  /* Reduced from 168px */
                 height: 6px;  /* Reduced by 30% */
             }
             .control-group input[type="number"] {
@@ -231,7 +233,7 @@
         /* Update version styling for grid layout */
         .version-group {
             display: grid;
-            grid-template-columns: 90px 180px 300px;  /* Match control-group columns */
+            grid-template-columns: 90px 180px 200px;  /* Reduced last column from 300px */
             align-items: center;
             padding: 24px 20px;  /* Added horizontal padding to match tab content */
             margin-top: auto;
@@ -258,9 +260,9 @@
         .version-group span:last-child {
             font-size: 30px;
             padding-left: 5px;
-            text-align: right;
+            text-align: left;  /* Changed from right to left */
             padding-right: 0;  /* Remove right padding since parent has padding */
-            content: 'Rev 2.7.6';  <!-- Updated version number -->
+            content: 'Rev ' + APP_VERSION;
         }
 
         @media (max-width: 768px) {
@@ -275,12 +277,13 @@
             display: flex;
             gap: 5px;  /* Reduced from 10px */
             justify-content: flex-start;
+            width: 240px;  /* Match select width */
         }
         
         .view-buttons button {
             flex: 1;
-            min-width: 45px;  /* Reduced from 70px */
-            padding: 8px 10px;  /* Added horizontal padding */
+            min-width: 0;  /* Remove min-width to allow even distribution */
+            padding: 8px 5px;  /* Reduced horizontal padding */
             font-size: 14px;  /* Slightly smaller font */
             color: white;  /* Add this line */
         }
@@ -373,7 +376,7 @@
         /* Add background section header */
         .bg-header {
             color: white;
-            font-size: 20px;  /* Reduced from 24px */
+            font-size: 18px;  /* Reduced from 20px */
             padding: 15px 0 5px 15px;
             border-top: 1px solid #444;
             margin-top: 15px;
@@ -525,7 +528,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.7.6</span>  <!-- Updated version number -->
+            <span id="versionNumber">Rev 2.7.8</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -755,6 +758,9 @@
                     undoButton.disabled = undoStack.length === 0;
                 }
             });
+
+            // Set version number from constant
+            document.getElementById('versionNumber').textContent = `Rev ${APP_VERSION}`;
         });
     </script>
 </body>
