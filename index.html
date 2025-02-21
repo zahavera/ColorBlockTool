@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <script>const APP_VERSION = "2.11.0";</script>
+    <script>const APP_VERSION = "2.12.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -390,15 +390,37 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
+            flex-direction: column;  /* Stack items vertically */
             gap: 10px;
             z-index: 999;
+            background: transparent;  /* Make container transparent */
+            align-items: center;  /* Center items horizontally */
+        }
+
+        /* Style for the color toggle button */
+        .color-toggle {
+            padding: 4px 12px;  /* Smaller padding */
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;  /* Smaller font */
+            min-width: 60px;  /* Narrower button */
+            margin-bottom: 5px;  /* Space between toggle and other buttons */
+        }
+
+        /* Container for the three main buttons */
+        .main-buttons {
+            display: flex;
+            gap: 10px;
             background: rgba(0,0,0,0.7);
             padding: 10px;
             border-radius: 4px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        .floating-controls button {
+        .main-buttons button {
             padding: 8px 20px;
             background: #444;
             border: none;
@@ -409,7 +431,7 @@
             min-width: 100px;
         }
 
-        .floating-controls button:hover {
+        .main-buttons button:hover {
             background: #555;
         }
 
@@ -615,10 +637,12 @@
         </div>
     </div>
     <div class="floating-controls">
-        <button onclick="randomizeControls()">Random</button>
-        <button onclick="document.getElementById('resetDefaults').click()">Reset</button>
-        <button onclick="document.getElementById('undoButton').click()" id="floatingUndo" disabled>Undo</button>
-        <button onclick="toggleBackground()" id="bgToggle">Black</button>
+        <button class="color-toggle" onclick="toggleBackground()" id="bgToggle">White</button>
+        <div class="main-buttons">
+            <button onclick="randomizeControls()">Random</button>
+            <button onclick="document.getElementById('resetDefaults').click()">Reset</button>
+            <button onclick="document.getElementById('undoButton').click()" id="floatingUndo" disabled>Undo</button>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -881,3 +905,5 @@
     </script>
 </body>
 </html>
+```
+</copilot-edited-file>
