@@ -1,0 +1,81 @@
+ of 0.01 units
+   - Scale all non-center objects uniformly
+   - Default to 0.3 units on initialization
+   - Maintain object centers at grid positions
+   - Apply scale changes without affecting positions
+   - Handle overlap conditions gracefully
+
+### Object Management Requirements
+1. Each grid position shall contain:
+   - A unique object instance
+   - A material reference
+   - A color value
+   - A transparency state
+   - A position vector
+   - A scale value
+
+2. The system shall track object status where:
+   - Surface objects are those with any coordinate at 0 or 24
+   - Interior objects are those not on the surface and not at center
+   - The center object has special handling at (12,12,12)
+   - Each status affects transparency and material properties
+
+3. Memory management shall:
+   - Use a linear array for object storage
+   - Calculate array indices using: index = x + y*25 + z*25*25
+   - Share geometries between identical shapes
+   - Cache and reuse materials when possible
+   - Properly dispose of unused resources
+   - Handle updates without memory leaks
+
+### Shape System Requirements
+1. Each shape type shall maintain consistent properties:
+
+   Sphere:
+   - 4 horizontal segments (performance optimized)
+   - 3 vertical segments (performance optimized)
+   - Radius of 1.0 units before scaling
+   - Smooth shading enabled
+   - No additional subdivisions
+   - Consistent normals for proper lighting
+
+   Diamond:
+   - Octahedron geometry with 8 faces
+   - No subdivision levels
+   - Sharp, clean edges
+   - Proper face normals
+   - Unit size before scaling
+   - Center of mass at origin
+
+   Star:
+   - Tetrahedron base geometry
+   - 4 distinct points
+   - No subdivisions
+   - Sharp vertex definition
+   - Proper face normals
+   - Consistent orientation in grid
+
+   Box:
+   - Perfect 1×1×1 cube base
+   - Single segment per face
+   - Sharp 90-degree corners
+   - Proper face normals
+   - Unit size before scaling
+   - Center of mass at origin
+
+   Cross:
+   - Three intersecting boxes
+   - Each box 1.5×0.5×0.5 units
+   - Perfect perpendicular alignment
+   - Proper intersection handling
+   - Consistent orientation
+   - Center of mass at intersection
+
+2. Shape switching shall:
+   - Preserve current position
+   - Maintain current scale
+   - Keep existing material properties
+   - Retain current color
+   - Update geometry efficiently
+   - Handle cleanup of old geometry
+   - Trigger proper depth sorting
