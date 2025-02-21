@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <script>const APP_VERSION = "2.12.0";</script>
+    <script>const APP_VERSION = "2.13.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -37,6 +37,7 @@
             width: 56px; /* Match the hamburger width */
             background: transparent; /* Make background transparent when closed */
             right: 15px; /* Add this line to move hamburger away from edge */
+            pointer-events: none; /* Disable all interactions when closed */
         }
         .controls:not(.active) .icon {
             display: none;
@@ -56,6 +57,7 @@
             cursor: pointer;
             text-shadow: 0 0 8px rgba(0,0,0,0.8);  /* Stronger shadow */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95)); /* Add background to hamburger only */
+            pointer-events: auto; /* Re-enable interactions just for hamburger */
         }
         
         /* Remove the reset circle button styles */
@@ -371,6 +373,8 @@
                 position: fixed;
                 width: 100%;
                 height: 100%;
+                overflow: hidden;
+                touch-action: none; /* Disable browser touch actions */
             }
         }
 
@@ -906,4 +910,3 @@
 </body>
 </html>
 ```
-</copilot-edited-file>
