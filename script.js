@@ -52,7 +52,9 @@ let params = {
         camera.up.set(0, 1, 0);
         
         controls.update();
-    }
+    },
+    lightIntensity: 0.7,
+    centerLightIntensity: 0.3
 };
 
 // Update SHAPES with lower poly counts
@@ -136,6 +138,7 @@ function init() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = true;
+    controls.maxDistance = 34.64; // Math.sqrt(20^2 + 20^2 + 20^2) to match initial camera position
 
     // Remove GUI setup and replace with custom controls
     function setupControls() {
@@ -146,7 +149,8 @@ function init() {
             centerGradient: document.getElementById('centerGradient'),
             opacity: document.getElementById('opacity'),
             shape: document.getElementById('shape'),
-            material: document.getElementById('material')
+            material: document.getElementById('material'),
+            centerLight: document.getElementById('centerLight')
         };
 
         // Set initial values
@@ -158,6 +162,7 @@ function init() {
         inputs.opacity.value = params.interiorOpacity;
         inputs.shape.value = params.shape;
         inputs.material.value = params.material;
+        inputs.centerLight.value = params.centerLightIntensity;
 
         // Add listeners
         inputs.ballSize.addEventListener('input', e => {
@@ -188,6 +193,7 @@ function init() {
             params.material = e.target.value;
             updateMaterial();
         });
+        inputs.centerLight.addEventListener('input', updateCenterLight);
     }
 
     setupControls();
@@ -195,6 +201,32 @@ function init() {
     
     window.addEventListener('resize', onWindowResize, false);
     animate();
+
+    // Replace single directional light with corner lights
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    // Add lights at each corner of the cube
+    cornerLights = [
+        { pos: [1, 1, 1] },    // Top Front Right
+        { pos: [-1, 1, 1] },   // Top Front Left
+        { pos: [1, -1, 1] },   // Bottom Front Right
+        { pos: [-1, -1, 1] },  // Bottom Front Left
+        { pos: [1, 1, -1] },   // Top Back Right
+        { pos: [-1, 1, -1] },  // Top Back Left
+        { pos: [1, -1, -1] },  // Bottom Back Right
+        { pos: [-1, -1, -1] }  // Bottom Back Left
+    ].map(({ pos }) => {
+        const light = new THREE.DirectionalLight(0xffffff, params.lightIntensity);
+        light.position.set(...pos).multiplyScalar(10);
+        light.lookAt(0, 0, 0);
+        scene.add(light);
+        return light;
+    });
+
+    // Add light control
+    const lightSlider = document.getElementById('lightIntensity');
+    lightSlider.addEventListener('input', updateLightIntensity);
 }
 
 function shiftColor(color) {
@@ -278,10 +310,23 @@ function createGrid() {
                 material.color = lerp3Colors(x, y, z);
                 
                 if (x === 12 && y === 12 && z === 12) {
-                    material.emissive = new THREE.Color(0xFFFFFF);
-                    material.emissiveIntensity = 0.3;  // Reduced from 0.5
-                    material.transparent = false;  // Keep center always solid
-                    const sphere = new THREE.Mesh(centerGeometry, material);
+                    // Create a special material for center that doesn't change
+                    const centerMaterial = new THREE.MeshPhysicalMaterial({
+                        color: 0xFFFFFF,
+                        emissive: 0xFFFFFF,
+                        emissiveIntensity: params.centerLightIntensity,
+                        transparent: false,
+                        depthWrite: true,
+                        depthTest: true,
+                        metalness: 0.2,
+                        roughness: 0.1,
+                        clearcoat: 1.0
+                    });
+
+                    const sphere = new THREE.Mesh(centerGeometry, centerMaterial);
+                    // Add point light at center with increased range and intensity
+                    const centerLight = new THREE.PointLight(0xFFFFFF, params.centerLightIntensity * 4, 15);
+                    sphere.add(centerLight);
                     spheres.push(sphere);
                 } else {
                     let shape;
@@ -324,6 +369,11 @@ function updateMaterial() {
     for(let x = 0; x < 25; x++) {
         for(let y = 0; y < 25; y++) {
             for(let z = 0; z < 25; z++) {
+                // Skip center diamond material update
+                if (x === 12 && y === 12 && z === 12) {
+                    index++;
+                    continue;
+                }
                 const object = spheres[index++];
                 if (object.material) {
                     const isInt = isInterior(x, y, z);
@@ -380,7 +430,7 @@ function updateColors() {
     let index = 0;
     for(let x = 0; x < 25; x++) {
         for(let y = 0; y < 25; y++) {   // Fixed: was using x < 25
-            for(let z = 0; z < 25; z++) {
+            for(let z = 0;  z < 25; z++) {
                 const sphere = spheres[index++];
                 sphere.material.color = lerp3Colors(x, y, z);
             }
@@ -471,6 +521,8 @@ function updateParams() {
     params.interiorOpacity = parseFloat(document.getElementById('opacity').value);
     params.shape = document.getElementById('shape').value;
     params.material = document.getElementById('material').value;
+    params.lightIntensity = parseFloat(document.getElementById('lightIntensity').value);
+    params.centerLightIntensity = parseFloat(document.getElementById('centerLight').value);
 
     // Update everything
     updateGridPositions();
@@ -478,6 +530,73 @@ function updateParams() {
     updateOpacity();
     updateShapes();
     updateMaterial();
+    updateLightIntensity();
+    updateCenterLight();
 }
+
+function updateLightIntensity() {
+    const intensity = parseFloat(document.getElementById('lightIntensity').value);
+    params.lightIntensity = intensity;
+    cornerLights.forEach(light => {
+        light.intensity = intensity;
+    });
+}
+
+function updateCenterLight() {
+    const intensity = parseFloat(document.getElementById('centerLight').value);
+    params.centerLightIntensity = intensity;
+    
+    const centerIndex = 12 * 25 * 25 + 12 * 25 + 12;
+    const centerObject = spheres[centerIndex];
+    if (centerObject) {
+        centerObject.material.emissiveIntensity = intensity;
+        if (centerObject.children.length > 0) {
+            centerObject.children[0].intensity = intensity * 4; // Increased multiplier
+        }
+    }
+}
+
+// Fix undo functionality
+window.randomizeControls = function() {
+    // Create single state for all random changes
+    const previousState = {
+        ballSize: document.getElementById('ballSize').value,
+        spacing: document.getElementById('spacing').value,
+        colorShift: document.getElementById('colorShift').value,
+        centerGradient: document.getElementById('centerGradient').value,
+        opacity: document.getElementById('opacity').value,
+        shape: document.getElementById('shape').value,
+        material: document.getElementById('material').value,
+        bgRed: document.getElementById('bgRed').value,
+        bgGreen: document.getElementById('bgGreen').value,
+        bgBlue: document.getElementById('bgBlue').value,
+        bgBright: document.getElementById('bgBright').value,
+        lightIntensity: document.getElementById('lightIntensity').value,
+        centerLight: document.getElementById('centerLight').value
+    };
+    
+    // Make all random changes
+    document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
+    document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
+    document.getElementById('colorShift').value = Math.random().toFixed(1);
+    document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
+    document.getElementById('opacity').value = Math.random().toFixed(1);
+
+    const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
+    const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
+    document.getElementById('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
+    document.getElementById('material').value = materials[Math.floor(Math.random() * materials.length)];
+    document.getElementById('lightIntensity').value = (Math.random() * 2).toFixed(1);
+    document.getElementById('centerLight').value = (Math.random() * 2).toFixed(1);
+
+    // Update all controls
+    ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity', 
+     'shape', 'material', 'lightIntensity', 'centerLight']
+        .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+
+    // Save state after all changes are made
+    undoStack.push(previousState);
+    undoButton.disabled = false;
+};
 
 init();
