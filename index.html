@@ -257,7 +257,7 @@
             font-size: 30px;
             padding-left: 5px;  /* Match other controls padding */
             text-align: left;
-            content: 'Rev 2.6.10';
+            content: 'Rev 2.7.3';
         }
 
         @media (max-width: 768px) {
@@ -506,7 +506,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.7.2</span>
+            <span>Rev 2.7.3</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -514,17 +514,62 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Add version update function at the top
+            async function updateVersion() {
+                try {
+                    const response = await fetch('version.json');
+                    const version = await response.json();
+                    version.patch++;
+                    
+                    // Update version displays
+                    const versionElements = document.querySelectorAll('.version-group span:last-child');
+                    versionElements.forEach(el => {
+                        el.textContent = `Rev ${version.major}.${version.minor}.${version.patch}`;
+                    });
+
+                    // Save updated version
+                    await fetch('version.json', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(version, null, 4)
+                    });
+                } catch (err) {
+                    console.error('Failed to update version:', err);
+                }
+            }
+
+            // Add version update to all control changes
+            function addVersionUpdateToControl(control) {
+                const originalChange = control.onchange;
+                control.onchange = async function(e) {
+                    if (originalChange) originalChange.call(this, e);
+                    await updateVersion();
+                };
+            }
+
+            // Add version tracking to all controls
+            const allControls = document.querySelectorAll('input, select, button');
+            allControls.forEach(addVersionUpdateToControl);
+
             const controls = document.querySelector('.controls');
+            const hamburger = document.querySelector('.controls::before');
             
+            // Replace the old toggleMenu function with this new version
             function toggleMenu(e) {
-                if (e.target === controls || e.clientX < 50) {
+                // Only toggle if clicking on the hamburger menu (the ::before element)
+                if (e.target === controls && e.offsetX > (controls.offsetWidth - 56) && e.offsetY < 56) {
                     e.preventDefault();
                     controls.classList.toggle('active');
                 }
             }
             
+            // Only attach the event to the controls element
             controls.addEventListener('click', toggleMenu);
-            controls.addEventListener('touchstart', toggleMenu);
+            
+            // Remove touchstart event as it's not needed
+            // controls.addEventListener('touchstart', toggleMenu);
 
             const sliders = document.querySelectorAll('input[type="range"]');
             sliders.forEach(slider => {
