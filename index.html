@@ -257,7 +257,7 @@
             font-size: 30px;
             padding-left: 5px;  /* Match other controls padding */
             text-align: left;
-            content: 'Rev 2.7.3';
+            content: 'Rev 2.7.4';  <!-- Updated version number -->
         }
 
         @media (max-width: 768px) {
@@ -269,13 +269,15 @@
         /* Style for view buttons container */
         .view-buttons {
             display: flex;
-            gap: 10px;
+            gap: 5px;  /* Reduced from 10px */
             justify-content: flex-start;
         }
         
         .view-buttons button {
             flex: 1;
-            min-width: 70px;  /* Ensure buttons don't get too narrow */
+            min-width: 45px;  /* Reduced from 70px */
+            padding: 8px 10px;  /* Added horizontal padding */
+            font-size: 14px;  /* Slightly smaller font */
             color: white;  /* Add this line */
         }
 
@@ -362,6 +364,15 @@
                 height: 100%;
             }
         }
+
+        /* Add background section header */
+        .bg-header {
+            color: white;
+            font-size: 24px;
+            padding: 15px 0 5px 15px;
+            border-top: 1px solid #444;
+            margin-top: 15px;
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
@@ -397,15 +408,10 @@
                     <input type="number" id="centerGradientNum" min="0.1" max="5" step="0.1">
                 </div>
             </div>
-            <div class="control-group">
-                <span class="icon">👁️</span>
-                <label>Fill Opacity</label>
-                <div class="slider-container">
-                    <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
-                    <input type="number" id="opacityNum" min="0" max="1" step="0.1">
-                </div>
-            </div>
-            <!-- Background color controls moved here -->
+            
+            <!-- Background section header -->
+            <div class="bg-header">Background Color</div>
+            
             <div class="control-group">
                 <span class="icon">🔴</span>
                 <label>Red</label>
@@ -459,6 +465,14 @@
                 </div>
             </div>
             <div class="control-group">
+                <span class="icon">👁️</span>
+                <label>Fill Opacity</label>
+                <div class="slider-container">
+                    <input type="range" id="opacity" min="0" max="1" step="0.1" style="--nominal-position: 100%">
+                    <input type="number" id="opacityNum" min="0" max="1" step="0.1">
+                </div>
+            </div>
+            <div class="control-group">
                 <span class="icon">🎚️</span>
                 <label>UI Opacity</label>
                 <div class="slider-container">
@@ -496,7 +510,7 @@
                 <span class="icon">🔄</span>
                 <label>View</label>
                 <div class="view-buttons">
-                    <button onclick="params.resetView()">Isometric</button>
+                    <button onclick="params.resetView()">Iso</button>
                     <button onclick="params.centerView()">Center</button>
                     <button onclick="params.fitView()">Fit</button>
                 </div>
@@ -506,7 +520,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.7.3</span>
+            <span>Rev 2.7.4</span>  <!-- Updated version number -->
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -514,49 +528,10 @@
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add version update function at the top
-            async function updateVersion() {
-                try {
-                    const response = await fetch('version.json');
-                    const version = await response.json();
-                    version.patch++;
-                    
-                    // Update version displays
-                    const versionElements = document.querySelectorAll('.version-group span:last-child');
-                    versionElements.forEach(el => {
-                        el.textContent = `Rev ${version.major}.${version.minor}.${version.patch}`;
-                    });
-
-                    // Save updated version
-                    await fetch('version.json', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(version, null, 4)
-                    });
-                } catch (err) {
-                    console.error('Failed to update version:', err);
-                }
-            }
-
-            // Add version update to all control changes
-            function addVersionUpdateToControl(control) {
-                const originalChange = control.onchange;
-                control.onchange = async function(e) {
-                    if (originalChange) originalChange.call(this, e);
-                    await updateVersion();
-                };
-            }
-
-            // Add version tracking to all controls
-            const allControls = document.querySelectorAll('input, select, button');
-            allControls.forEach(addVersionUpdateToControl);
-
             const controls = document.querySelector('.controls');
             const hamburger = document.querySelector('.controls::before');
             
-            // Replace the old toggleMenu function with this new version
+            // Remove all the version update code and continue with the existing functionality
             function toggleMenu(e) {
                 // Only toggle if clicking on the hamburger menu (the ::before element)
                 if (e.target === controls && e.offsetX > (controls.offsetWidth - 56) && e.offsetY < 56) {
