@@ -223,6 +223,9 @@
             .version-group span:last-child {
                 font-size: 21px;  /* Reduced by 30% */
             }
+            .tab-content {
+                padding: 0 10px;  /* Less padding on mobile */
+            }
         }
 
         /* Update version styling for grid layout */
@@ -230,21 +233,20 @@
             display: grid;
             grid-template-columns: 90px 180px 300px;  /* Match control-group columns */
             align-items: center;
-            padding: 24px 0;
+            padding: 24px 20px;  /* Added horizontal padding to match tab content */
             margin-top: auto;
             border-top: 1px solid #666;
-            position: fixed;  /* Fix version to bottom */
+            position: fixed;
             bottom: 0;
             right: 0;
-            width: 630px;  /* Match drawer width */
+            width: 590px;  /* Reduced by padding amount (630px - 40px) */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
-            padding: 20px 0;
             margin: 0;
         }
 
         .version-group .icon {
-            justify-self: center;  /* Center icon like others */
-            margin-left: -20px;  /* Match other icons */
+            justify-self: center;
+            margin-left: 0;  /* Remove left margin to align with other icons */
         }
 
         .version-group label {
@@ -255,14 +257,16 @@
 
         .version-group span:last-child {
             font-size: 30px;
-            padding-left: 5px;  /* Match other controls padding */
-            text-align: left;
-            content: 'Rev 2.7.4';  <!-- Updated version number -->
+            padding-left: 5px;
+            text-align: right;
+            padding-right: 0;  /* Remove right padding since parent has padding */
+            content: 'Rev 2.7.6';  <!-- Updated version number -->
         }
 
         @media (max-width: 768px) {
             .version-group {
-                grid-template-columns: 50px 100px 180px;  /* Match mobile control-group */
+                padding: 14px 10px;  /* Reduced padding for mobile */
+                width: calc(100% - 20px);  /* Full width minus padding */
             }
         }
 
@@ -302,6 +306,7 @@
         }
         .tab-content {
             display: none;
+            padding: 0 20px;  /* Add horizontal padding to bring content in */
         }
         .tab-content.active {
             display: block;
@@ -368,7 +373,7 @@
         /* Add background section header */
         .bg-header {
             color: white;
-            font-size: 24px;
+            font-size: 20px;  /* Reduced from 24px */
             padding: 15px 0 5px 15px;
             border-top: 1px solid #444;
             margin-top: 15px;
@@ -520,7 +525,7 @@
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
-            <span>Rev 2.7.4</span>  <!-- Updated version number -->
+            <span>Rev 2.7.6</span>  <!-- Updated version number -->
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
