@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <!-- Define version in one place -->
-    <script>const APP_VERSION = "2.7.8";</script>
+    <!-- Define version - increment to 2.7.11 -->
+    <script>const APP_VERSION = "2.8.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -71,7 +71,7 @@
         }
         .control-group {
             display: grid;
-            grid-template-columns: 90px 180px 300px;  /* Increased all columns by 50% */
+            grid-template-columns: 90px 120px 200px;  /* Further reduced from 90px 150px 250px */
             align-items: center;
             padding: 24px 0;  /* Increased padding */
             margin-left: 0;
@@ -97,7 +97,7 @@
         }
         .control-group input[type="range"] {
             -webkit-appearance: none;
-            width: 200px;  /* Reduced from 240px */
+            width: 150px;  /* Further reduced from 180px */
             height: 9px;  /* Increased from 6px */
             margin-top: 16px;  /* Center in container */
             margin-bottom: 16px;
@@ -134,7 +134,7 @@
             transform: translateY(-13.5px);  /* Center on 6px track */
         }
         .control-group input[type="number"] {
-            width: 90px;  /* Increased from 60px */
+            width: 70px;  /* Reduced from 90px */
             height: 45px;  /* Increased from 30px */
             background: #333;
             color: white;
@@ -144,7 +144,7 @@
             font-size: 24px;  /* Increased from 16px */
         }
         .control-group select {
-            width: 240px;  /* Revert back to original width */
+            width: 170px;  /* Further reduced from 200px */
             height: 52px;  /* Increased from 35px */
             background: #333;
             color: white;
@@ -180,7 +180,7 @@
                 width: 100%;  /* Full width on mobile */
             }
             .control-group {
-                grid-template-columns: 35px 126px 210px;  /* Reduced by 30% */
+                grid-template-columns: 35px 84px 140px;  /* Adjusted proportionally */
                 padding: 11px 6px;  /* Reduced padding */
             }
             .control-group label {
@@ -233,7 +233,7 @@
         /* Update version styling for grid layout */
         .version-group {
             display: grid;
-            grid-template-columns: 90px 180px 200px;  /* Reduced last column from 300px */
+            grid-template-columns: 90px 80px 120px;  /* Further reduced widths */
             align-items: center;
             padding: 24px 20px;  /* Added horizontal padding to match tab content */
             margin-top: auto;
@@ -241,7 +241,7 @@
             position: fixed;
             bottom: 0;
             right: 0;
-            width: 590px;  /* Reduced by padding amount (630px - 40px) */
+            width: 410px;  /* Adjusted total width */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
             margin: 0;
         }
@@ -258,7 +258,9 @@
         }
 
         .version-group span:last-child {
-            font-size: 30px;
+            font-size: 24px;  /* Reduced from 30px */
+            white-space: nowrap;  /* Prevent wrapping */
+            margin-left: 40px;  /* Increased from 20px */
             padding-left: 5px;
             text-align: left;  /* Changed from right to left */
             padding-right: 0;  /* Remove right padding since parent has padding */
@@ -277,7 +279,7 @@
             display: flex;
             gap: 5px;  /* Reduced from 10px */
             justify-content: flex-start;
-            width: 240px;  /* Match select width */
+            width: 170px;  /* Match new select width */
         }
         
         .view-buttons button {
@@ -309,7 +311,7 @@
         }
         .tab-content {
             display: none;
-            padding: 0 20px;  /* Add horizontal padding to bring content in */
+            padding: 0 20px 160px 20px;  /* Increased bottom padding */
         }
         .tab-content.active {
             display: block;
@@ -380,6 +382,36 @@
             padding: 15px 0 5px 15px;
             border-top: 1px solid #444;
             margin-top: 15px;
+        }
+
+        /* Add floating bottom controls */
+        .floating-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 999;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .floating-controls button {
+            padding: 8px 20px;
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            min-width: 100px;
+        }
+
+        .floating-controls button:hover {
+            background: #555;
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -530,6 +562,11 @@
             <label>Version</label>
             <span id="versionNumber">Rev 2.7.8</span>
         </div>
+    </div>
+    <div class="floating-controls">
+        <button onclick="randomizeControls()">Random</button>
+        <button onclick="document.getElementById('resetDefaults').click()">Reset</button>
+        <button onclick="document.getElementById('undoButton').click()" id="floatingUndo" disabled>Undo</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -758,6 +795,20 @@
                     undoButton.disabled = undoStack.length === 0;
                 }
             });
+
+            // Sync floating undo button state with drawer undo button
+            const floatingUndo = document.getElementById('floatingUndo');
+            const drawerUndo = document.getElementById('undoButton');
+            
+            const observer = new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    if (mutation.attributeName === 'disabled') {
+                        floatingUndo.disabled = drawerUndo.disabled;
+                    }
+                });
+            });
+            
+            observer.observe(drawerUndo, { attributes: true });
 
             // Set version number from constant
             document.getElementById('versionNumber').textContent = `Rev ${APP_VERSION}`;
