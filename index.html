@@ -2,8 +2,7 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <!-- Define version - increment to 2.7.11 -->
-    <script>const APP_VERSION = "2.9.0";</script>
+    <script>const APP_VERSION = "2.10.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -619,6 +618,7 @@
         <button onclick="randomizeControls()">Random</button>
         <button onclick="document.getElementById('resetDefaults').click()">Reset</button>
         <button onclick="document.getElementById('undoButton').click()" id="floatingUndo" disabled>Undo</button>
+        <button onclick="toggleBackground()" id="bgToggle">Black</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -735,55 +735,32 @@
                 // Save state before random changes
                 saveState();
                 
-                // Existing random controls
+                // Pick random values
+                const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
+                const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
+                
+                // Set numeric values
                 document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
                 document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
                 document.getElementById('colorShift').value = Math.random().toFixed(1);
                 document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
                 document.getElementById('opacity').value = Math.random().toFixed(1);
+                
+                // Update shape first with change event
+                const shapeSelect = document.getElementById('shape');
+                shapeSelect.value = shapes[Math.floor(Math.random() * shapes.length)];
+                shapeSelect.dispatchEvent(new Event('change'));
 
-                // Add material to random
-                const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
-                const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
-                document.getElementById('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
-                document.getElementById('material').value = materials[Math.floor(Math.random() * materials.length)];
+                // Then update material
+                const materialSelect = document.getElementById('material');
+                materialSelect.value = materials[Math.floor(Math.random() * materials.length)];
+                materialSelect.dispatchEvent(new Event('change'));
 
-                // Update all controls including material
-                ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity', 'shape', 'material']
-                    .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
-            };
-
-            // Replace default settings handler with new button handler
-            document.getElementById('resetDefaults').addEventListener('click', function() {
-                const defaults = {
-                    'ballSize': 0.06,
-                    'spacing': 0.3,
-                    'colorShift': 0.5,
-                    'centerGradient': 2.0,
-                    'opacity': 1.0,
-                    'shape': 'sphere',
-                    'material': 'standard', /* Add material default */
-                    'uiOpacity': 0.5,
-                    'bgRed': 0,
-                    'bgGreen': 0,
-                    'bgBlue': 0,
-                    'bgBright': 0
-                };
-
-                // Apply defaults to HTML elements
-                Object.entries(defaults).forEach(([id, value]) => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.value = value;
-                        const numInput = document.getElementById(id + 'Num');
-                        if (numInput) numInput.value = value;
-                    }
+                // Update numeric inputs last
+                ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity'].forEach(id => {
+                    document.getElementById(id).dispatchEvent(new Event('input'));
                 });
-
-                // Update all THREE.js parameters and visuals
-                updateParams();
-                updateBackground();
-            });
+            };
 
             // Add undo system
             const undoStack = [];
@@ -864,6 +841,42 @@
 
             // Set version number from constant
             document.getElementById('versionNumber').textContent = `Rev ${APP_VERSION}`;
+
+            // Add background toggle function
+            function toggleBackground() {
+                const bgToggle = document.getElementById('bgToggle');
+                const isBlack = bgToggle.textContent === 'Black';
+                
+                ['bgRed', 'bgGreen', 'bgBlue', 'bgBright'].forEach(id => {
+                    document.getElementById(id).value = isBlack ? 0 : 1;
+                    document.getElementById(id + 'Num').value = isBlack ? 0 : 1;
+                });
+                
+                updateBackground();
+                bgToggle.textContent = isBlack ? 'White' : 'Black';
+            }
+
+            // Add improved background toggle function
+            window.toggleBackground = function() {
+                const bgToggle = document.getElementById('bgToggle');
+                const r = parseFloat(document.getElementById('bgRed').value);
+                const g = parseFloat(document.getElementById('bgGreen').value);
+                const b = parseFloat(document.getElementById('bgBlue').value);
+                
+                // Check if current background is black (all values near 0)
+                const isCurrentlyBlack = (r + g + b) < 0.1;
+                
+                // Set all values to either 0 (black) or 1 (white)
+                const newValue = isCurrentlyBlack ? '1' : '0';
+                
+                ['bgRed', 'bgGreen', 'bgBlue', 'bgBright'].forEach(id => {
+                    document.getElementById(id).value = newValue;
+                    document.getElementById(id + 'Num').value = newValue;
+                });
+                
+                updateBackground();
+                bgToggle.textContent = isCurrentlyBlack ? 'Black' : 'White';
+            };
         });
     </script>
 </body>

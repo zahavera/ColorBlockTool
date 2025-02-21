@@ -1,7 +1,7 @@
 let scene, camera, renderer, controls;
 let spheres = [];
 let params = {
-    ballSize: 0.06,
+    ballSize: 0.3,
     spacing: 0.3,
     sizeStep: 0.01,
     spacingStep: 0.05,
@@ -9,7 +9,7 @@ let params = {
     colorStep: 0.1,
     centerGradient: 2.0,  // Changed default
     interiorOpacity: 1.0,  // Keep only this opacity parameter
-    shape: 'sphere',  // New parameter for shape selection
+    shape: 'box',  // New parameter for shape selection
     material: 'standard',
     resetView: function() {
         // Stop all momentum immediately
@@ -53,8 +53,8 @@ let params = {
         
         controls.update();
     },
-    lightIntensity: 0.7,
-    centerLightIntensity: 0.3
+    lightIntensity: 0.5,
+    centerLightIntensity: 1.0
 };
 
 // Update SHAPES with lower poly counts
@@ -74,7 +74,9 @@ const MATERIALS = {
         roughness: 0.5,
         clearcoat: 0.0,
         transmission: 0.0,
-        opacity: 1.0
+        opacity: 1.0,
+        transparent: false,  // Force opaque for standard
+        depthWrite: true    // Enable depth writing
     },
     metal: {
         metalness: 1.0,
@@ -130,7 +132,12 @@ function init() {
     camera.position.set(20, 20, 20); // Moved camera further out
     camera.lookAt(0, 0, 0);
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        logarithmicDepthBuffer: true,  // Add this
+        precision: 'highp'             // Add this
+    });
+    renderer.setPixelRatio(window.devicePixelRatio); // Add this
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -187,7 +194,27 @@ function init() {
         });
         inputs.shape.addEventListener('change', e => {
             params.shape = e.target.value;
-            updateShapes();
+            // Store current material type before rebuild
+            const currentMaterial = params.material;
+            
+            // Clear scene
+            spheres.forEach(shape => {
+                if (shape.children) {
+                    shape.children.forEach(child => {
+                        if (child.geometry) child.geometry.dispose();
+                        if (child.material) child.material.dispose();
+                    });
+                }
+                if (shape.geometry) shape.geometry.dispose();
+                scene.remove(shape);
+            });
+            spheres = [];
+            materialCache.clear();
+            
+            // Rebuild grid and force material update
+            createGrid();
+            params.material = currentMaterial; // Restore material type
+            updateMaterial(); // Force material update
         });
         inputs.material.addEventListener('change', e => {
             params.material = e.target.value;
@@ -202,31 +229,30 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);
     animate();
 
-    // Replace single directional light with corner lights
-    const ambientLight = new THREE.AmbientLight(0x404040);
+    // Remove the old lighting code and replace with this:
+    // Base ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
     scene.add(ambientLight);
 
-    // Add lights at each corner of the cube
+    // Add corner lights
     cornerLights = [
-        { pos: [1, 1, 1] },    // Top Front Right
-        { pos: [-1, 1, 1] },   // Top Front Left
-        { pos: [1, -1, 1] },   // Bottom Front Right
-        { pos: [-1, -1, 1] },  // Bottom Front Left
-        { pos: [1, 1, -1] },   // Top Back Right
-        { pos: [-1, 1, -1] },  // Top Back Left
-        { pos: [1, -1, -1] },  // Bottom Back Right
-        { pos: [-1, -1, -1] }  // Bottom Back Left
-    ].map(({ pos }) => {
-        const light = new THREE.DirectionalLight(0xffffff, params.lightIntensity);
-        light.position.set(...pos).multiplyScalar(10);
+        // Front corners
+        { pos: [1, 1, 1], color: 0xCCCCCC },    // Top Front Right
+        { pos: [-1, 1, 1], color: 0xCCCCCC },   // Top Front Left
+        { pos: [1, -1, 1], color: 0xCCCCCC },   // Bottom Front Right
+        { pos: [-1, -1, 1], color: 0xCCCCCC },  // Bottom Front Left
+        // Back corners
+        { pos: [1, 1, -1], color: 0xCCCCCC },   // Top Back Right
+        { pos: [-1, 1, -1], color: 0xCCCCCC },  // Top Back Left
+        { pos: [1, -1, -1], color: 0xCCCCCC },  // Bottom Back Right
+        { pos: [-1, -1, -1], color: 0xCCCCCC }  // Bottom Back Left
+    ].map(({ pos, color }) => {
+        const light = new THREE.DirectionalLight(color, params.lightIntensity);
+        light.position.set(...pos).multiplyScalar(15);
         light.lookAt(0, 0, 0);
         scene.add(light);
         return light;
     });
-
-    // Add light control
-    const lightSlider = document.getElementById('lightIntensity');
-    lightSlider.addEventListener('input', updateLightIntensity);
 }
 
 function shiftColor(color) {
@@ -294,11 +320,12 @@ function createGrid() {
     const baseMaterial = new THREE.MeshPhysicalMaterial({
         transparent: true,
         opacity: 1.0,
-        depthWrite: false, // Allow proper transparency
+        depthWrite: true,     // Changed from false
         depthTest: true,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
-        polygonOffsetUnits: -1
+        polygonOffsetFactor: -2,  // Changed from -1
+        polygonOffsetUnits: -2,   // Changed from -1
+        alphaToCoverage: true     // Add this
     });
     
     for(let x = 0; x < 25; x++) {
@@ -348,14 +375,6 @@ function createGrid() {
             }
         }
     }
-
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(10, 10, 10);
-    scene.add(light);
     
     updateGridPositions(); // Set initial positions and scale
 }
@@ -365,6 +384,8 @@ function updateMaterial() {
     const materialType = params.material;
     const properties = MATERIALS[materialType];
     
+    materialCache.clear(); // Clear cache to force new materials
+
     let index = 0;
     for(let x = 0; x < 25; x++) {
         for(let y = 0; y < 25; y++) {
@@ -377,25 +398,20 @@ function updateMaterial() {
                 const object = spheres[index++];
                 if (object.material) {
                     const isInt = isInterior(x, y, z);
-                    const cacheKey = `${materialType}_${isInt}`;
+                    const material = new THREE.MeshPhysicalMaterial({
+                        ...properties,
+                        transparent: (isInt || materialType === 'glass'),
+                        opacity: isInt ? params.interiorOpacity : 1.0,
+                        depthWrite: true,  // Changed from conditional
+                        depthTest: true,
+                        polygonOffset: true,
+                        polygonOffsetFactor: -2,
+                        polygonOffsetUnits: -2,
+                        alphaToCoverage: true
+                    });
                     
-                    // Try to get cached material
-                    if (!materialCache.has(cacheKey)) {
-                        const material = new THREE.MeshPhysicalMaterial({
-                            ...properties,
-                            transparent: isInt || materialType === 'glass',
-                            opacity: isInt ? params.interiorOpacity : 1.0,
-                            depthWrite: !isInt,
-                            depthTest: true,
-                            polygonOffset: true,
-                            polygonOffsetFactor: -1,
-                            polygonOffsetUnits: -1
-                        });
-                        materialCache.set(cacheKey, material);
-                    }
-                    
-                    // Use cached material and just update color
-                    object.material = materialCache.get(cacheKey).clone();
+                    // Update material and color
+                    object.material = material;
                     object.material.color = lerp3Colors(x, y, z);
                 }
             }
@@ -454,42 +470,20 @@ function updateOpacity() {
 
 // Update updateShapes to be more efficient
 function updateShapes() {
-    let index = 0;
-    const crossTemplate = SHAPES.cross;
-    
-    for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {   // Fixed: was using x in condition
-            for(let z = 0; z < 25; z++) {  // Fixed: was using x in condition
-                if (!(x === 12 && y === 12 && z === 12)) {
-                    const oldShape = spheres[index];
-                    const oldMaterial = oldShape.material;
-                    scene.remove(oldShape);
-                    
-                    let newShape;
-                    if (params.shape === 'cross') {
-                        newShape = new THREE.Group();
-                        const box1 = new THREE.Mesh(crossTemplate, oldMaterial);
-                        const box2 = new THREE.Mesh(crossTemplate, oldMaterial);
-                        const box3 = new THREE.Mesh(crossTemplate, oldMaterial);
-                        box2.rotation.z = Math.PI/2;
-                        box3.rotation.x = Math.PI/2;
-                        newShape.add(box1, box2, box3);
-                    } else {
-                        newShape = new THREE.Mesh(SHAPES[params.shape], oldMaterial);
-                    }
-                    
-                    newShape.position.copy(oldShape.position);
-                    newShape.scale.copy(oldShape.scale);
-                    spheres[index] = newShape;
-                    scene.add(newShape);
-                }
-                index++;
-            }
+    // Remove all existing shapes
+    spheres.forEach(shape => {
+        if (shape.children) {
+            shape.children.forEach(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+            });
         }
-    }
+        if (shape.geometry) shape.geometry.dispose();
+        scene.remove(shape);
+    });
     
-    // Ensure material properties are maintained
-    updateMaterial();
+    spheres = [];
+    createGrid(); // Rebuild everything
 }
 
 function onWindowResize() {
@@ -558,7 +552,6 @@ function updateCenterLight() {
 
 // Fix undo functionality
 window.randomizeControls = function() {
-    // Create single state for all random changes
     const previousState = {
         ballSize: document.getElementById('ballSize').value,
         spacing: document.getElementById('spacing').value,
@@ -566,37 +559,82 @@ window.randomizeControls = function() {
         centerGradient: document.getElementById('centerGradient').value,
         opacity: document.getElementById('opacity').value,
         shape: document.getElementById('shape').value,
-        material: document.getElementById('material').value,
-        bgRed: document.getElementById('bgRed').value,
-        bgGreen: document.getElementById('bgGreen').value,
-        bgBlue: document.getElementById('bgBlue').value,
-        bgBright: document.getElementById('bgBright').value,
-        lightIntensity: document.getElementById('lightIntensity').value,
-        centerLight: document.getElementById('centerLight').value
+        material: document.getElementById('material').value
     };
-    
-    // Make all random changes
-    document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
-    document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
-    document.getElementById('colorShift').value = Math.random().toFixed(1);
-    document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
-    document.getElementById('opacity').value = Math.random().toFixed(1);
 
-    const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
-    const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
-    document.getElementById('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
-    document.getElementById('material').value = materials[Math.floor(Math.random() * materials.length)];
-    document.getElementById('lightIntensity').value = (Math.random() * 2).toFixed(1);
-    document.getElementById('centerLight').value = (Math.random() * 2).toFixed(1);
-
-    // Update all controls
-    ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity', 
-     'shape', 'material', 'lightIntensity', 'centerLight']
-        .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
-
-    // Save state after all changes are made
     undoStack.push(previousState);
     undoButton.disabled = false;
 };
+
+// Update default settings
+document.getElementById('resetDefaults').addEventListener('click', function() {
+    const defaults = {
+        'ballSize': 0.3,
+        'spacing': 0.3,
+        'colorShift': 0.5,
+        'centerGradient': 3.0,
+        'opacity': 0.0,
+        'shape': 'box',
+        'material': 'plastic',
+        'uiOpacity': 0.0,
+        'bgRed': 0,
+        'bgGreen': 0,
+        'bgBlue': 0,
+        'bgBright': 0,
+        'lightIntensity': 0.5,
+        'centerLight': 1.0
+    };
+
+    // ... rest of reset function ...
+});
+
+const PRESETS = [
+    {
+        // Default preset
+        ballSize: 0.3,
+        spacing: 0.3,
+        colorShift: 0.5,
+        centerGradient: 3.0,
+        opacity: 0.0,
+        shape: 'box',
+        material: 'plastic',
+        lightIntensity: 0.5,
+        centerLight: 1.0
+    },
+    {
+        // Metal spheres preset
+        ballSize: 0.5,
+        spacing: 0.8,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 1.0,
+        shape: 'sphere',
+        material: 'metal',
+        lightIntensity: 0.2,
+        centerLight: 5.0
+    }
+];
+
+let currentPreset = 0;
+
+// Update reset handler
+document.getElementById('resetDefaults').addEventListener('click', function() {
+    currentPreset = (currentPreset + 1) % PRESETS.length;
+    const preset = PRESETS[currentPreset];
+    
+    // Apply preset to HTML elements
+    Object.entries(preset).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+            const numInput = document.getElementById(id + 'Num');
+            if (numInput) numInput.value = value;
+            element.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Update all THREE.js parameters and visuals
+    updateParams();
+});
 
 init();
