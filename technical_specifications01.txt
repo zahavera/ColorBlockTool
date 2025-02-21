@@ -1,0 +1,269 @@
+# Detailed Technical Requirements
+
+## Grid System Requirements
+
+### Grid Structure
+1. The system shall implement a 25×25×25 grid where:
+   - Grid origin (0,0,0) shall be at exact center
+   - Grid coordinates shall range from 0 to 24 on each axis
+   - Position (12,12,12) shall represent true center
+   - World positions shall be calculated as (x-12, y-12, z-12) * spacing
+
+2. The spacing control shall:
+   - Accept values between 0.1 and 1.0 units
+   - Update in increments of 0.05 units
+   - Default to 0.3 units on initialization
+   - Apply changes immediately to all positions
+   - Maintain object scale independence
+   - Trigger proper depth sorting
+
+3. The size control shall:
+   - Accept values between 0.02 and 3.0 units
+   - Update in increments of 0.01 units
+   - Scale all non-center objects uniformly
+   - Default to 0.3 units on initialization
+   - Maintain object centers at grid positions
+   - Apply scale changes without affecting positions
+   - Handle overlap conditions gracefully
+
+### Object Management Requirements
+1. Each grid position shall contain:
+   - A unique object instance
+   - A material reference
+   - A color value
+   - A transparency state
+   - A position vector
+   - A scale value
+
+2. The system shall track object status where:
+   - Surface objects are those with any coordinate at 0 or 24
+   - Interior objects are those not on the surface and not at center
+   - The center object has special handling at (12,12,12)
+   - Each status affects transparency and material properties
+
+3. Memory management shall:
+   - Use a linear array for object storage
+   - Calculate array indices using: index = x + y*25 + z*25*25
+   - Share geometries between identical shapes
+   - Cache and reuse materials when possible
+   - Properly dispose of unused resources
+   - Handle updates without memory leaks
+
+### Shape System Requirements
+1. Each shape type shall maintain consistent properties:
+
+   Sphere:
+   - 4 horizontal segments (performance optimized)
+   - 3 vertical segments (performance optimized)
+   - Radius of 1.0 units before scaling
+   - Smooth shading enabled
+   - No additional subdivisions
+   - Consistent normals for proper lighting
+
+   Diamond:
+   - Octahedron geometry with 8 faces
+   - No subdivision levels
+   - Sharp, clean edges
+   - Proper face normals
+   - Unit size before scaling
+   - Center of mass at origin
+
+   Star:
+   - Tetrahedron base geometry
+   - 4 distinct points
+   - No subdivisions
+   - Sharp vertex definition
+   - Proper face normals
+   - Consistent orientation in grid
+
+   Box:
+   - Perfect 1×1×1 cube base
+   - Single segment per face
+   - Sharp 90-degree corners
+   - Proper face normals
+   - Unit size before scaling
+   - Center of mass at origin
+
+   Cross:
+   - Three intersecting boxes
+   - Each box 1.5×0.5×0.5 units
+   - Perfect perpendicular alignment
+   - Proper intersection handling
+   - Consistent orientation
+   - Center of mass at intersection
+
+2. Shape switching shall:
+   - Preserve current position
+   - Maintain current scale
+   - Keep existing material properties
+   - Retain current color
+   - Update geometry efficiently
+   - Handle cleanup of old geometry
+   - Trigger proper depth sorting
+
+## Color System Requirements
+
+### Color Configuration
+1. The system shall implement eight distinct corner colors:
+   - Each corner shall define one of the base colors of the construct
+   - Corner colors shall be fixed and not modifiable by user input
+   - Colors shall include:
+     * Top Front Right: Cyan (0x00FFFF)
+     * Top Front Left: Black (0x000000)
+     * Bottom Front Right: Green (0x00FF00)
+     * Bottom Front Left: Yellow (0xFFFF00)
+     * Top Back Right: Blue (0x0000FF)
+     * Top Back Left: Magenta (0xFF00FF)
+     * Bottom Back Right: Black (0x000000)
+     * Bottom Back Left: Red (0xFF0000)
+     * Center: White (0xFFFFFF)
+
+### Color Interpolation System
+1. The system shall calculate colors using the following process:
+   - Use trilinear interpolation between corner colors
+   - Calculate normalized distance from center (0.0 to 1.0)
+   - Apply center gradient influence based on distance
+   - Scale center influence by gradient parameter
+   - Apply final color shift after all calculations
+   - Maintain pure white at center point
+
+2. The gradient control shall:
+   - Accept values from 0.1 to 5.0
+   - Update in increments of 0.1
+   - Default to 2.0
+   - Create exponential falloff from center
+   - Apply uniformly in all directions
+   - Update in real-time
+   - Preserve center point color
+
+3. The color shift control shall:
+   - Accept UI input from 0.0 to 1.0
+   - Map internally to -1.0 through +1.0
+   - Apply shifts after all other calculations
+   - Blend toward black below 0.5
+   - Blend toward white above 0.5
+   - Update in real-time
+   - Preserve center point color
+
+## Material System Requirements
+
+### Material Properties
+1. Each material type shall maintain specific properties:
+
+   Standard Material:
+   - Metalness: 0.0
+   - Roughness: 0.5
+   - Clearcoat: 0.0
+   - Transmission: 0.0
+   - Opacity: 1.0
+   - Transparent: false
+   - Depth writing: enabled
+
+   Metal Material:
+   - Metalness: 1.0
+   - Roughness: 0.2
+   - Clearcoat: 0.5
+   - Transmission: 0.0
+   - Opacity: 1.0
+   - High specular reflection
+
+   Glass Material:
+   - Metalness: 0.0
+   - Roughness: 0.0
+   - Clearcoat: 1.0
+   - Transmission: 0.9
+   - Base opacity: 0.3
+   - Proper refraction
+   - Proper sorting
+
+   Plastic Material:
+   - Metalness: 0.0
+   - Roughness: 0.3
+   - Clearcoat: 0.7
+   - Transmission: 0.0
+   - Opacity: 1.0
+   - High definition
+
+   Glossy Material:
+   - Metalness: 0.3
+   - Roughness: 0.0
+   - Clearcoat: 1.0
+   - Transmission: 0.0
+   - Opacity: 1.0
+   - Maximum reflection
+
+2. Material switching shall:
+   - Preserve object colors
+   - Update all non-center objects
+   - Handle transparency properly
+   - Maintain proper depth sorting
+   - Update in real-time
+   - Clear material cache
+   - Trigger proper re-rendering
+
+## Control System Requirements
+
+### Random Generation
+1. The Random button shall:
+   - Generate random values within valid ranges for:
+     * Ball Size (0.02 to 3.0)
+     * Spacing (0.1 to 1.0)
+     * Color Shift (0.0 to 1.0)
+     * Center Gradient (0.1 to 5.0)
+     * Fill Opacity (0.0 to 1.0)
+   - Select random shape from available options
+   - Select random material from available options
+   - Update UI controls to match values
+   - Apply changes immediately
+   - Save state for undo system
+
+### Preset System
+1. The Reset button shall:
+   - Cycle through defined presets
+   - Update all control values
+   - Apply changes immediately
+   - Update UI elements
+   - Maintain proper state
+
+2. Presets shall include:
+   Default:
+   - Ball Size: 0.3
+   - Spacing: 0.3
+   - Color Shift: 0.5
+   - Center Gradient: 3.0
+   - Fill Opacity: 0.0
+   - Shape: Box
+   - Material: Plastic
+   - Light: 0.5
+   - Center Light: 1.0
+
+   Metal Spheres:
+   - Ball Size: 0.5
+   - Spacing: 0.8
+   - Color Shift: 0.5
+   - Center Gradient: 5.0
+   - Fill Opacity: 1.0
+   - Shape: Sphere
+   - Material: Metal
+   - Light: 0.2
+   - Center Light: 5.0
+
+### View Controls
+1. The Isometric view shall:
+   - Maintain current camera distance
+   - Set equal angles to all axes
+   - Reset up vector to (0,1,0)
+   - Target center point (0,0,0)
+   - Transition smoothly
+
+2. The Center view shall:
+   - Move to 0.15 units from center
+   - Preserve current viewing angle
+   - Target center point (0,0,0)
+   - Update smoothly
+
+3. The Fit view shall:
+   - Position at (20,20,20)
+   - Look at (0,0,0)
+   - Reset up vector
+   - Show entire construct
