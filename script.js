@@ -127,7 +127,7 @@ const colors = {
 // Move PRESETS to top of file, before init()
 const PRESETS = [
     {
-        name: "Default",
+        name: "ColorCube",
         ballSize: 0.3,
         spacing: 0.3,
         colorShift: 0.5,
@@ -140,27 +140,14 @@ const PRESETS = [
         view: 'isoFit'
     },
     {
-        name: "New Shape1",
+        name: "ColorCube Center",
         ballSize: 0.3,
         spacing: 0.3,
         colorShift: 0.5,
         centerGradient: 5.0,
         opacity: 0.0,
         lightIntensity: 0.1,
-        centerLight: 0.0,
-        shape: 'box',
-        material: 'standard',
-        view: 'isoFit'
-    },
-    {
-        name: "New Shape1 Center",
-        ballSize: 0.3,
-        spacing: 0.3,
-        colorShift: 0.5,
-        centerGradient: 5.0,
-        opacity: 0.0,
-        lightIntensity: 0.1,
-        centerLight: 0.0,
+        centerLight: 0.5,
         shape: 'box',
         material: 'standard',
         view: 'center'
@@ -172,14 +159,14 @@ const PRESETS = [
         colorShift: 0.5,
         centerGradient: 5.0,
         opacity: 1.0,
-        lightIntensity: 0.2,
-        centerLight: 5.0,
+        lightIntensity: 3,
+        centerLight: 0.6,
         shape: 'sphere',
         material: 'metal',
         view: 'isoFit'
     },
     {
-        name: "New Preset",
+        name: "ColorBalls",
         ballSize: 0.26,
         spacing: 1,
         colorShift: 0.2,
@@ -192,13 +179,13 @@ const PRESETS = [
         view: 'isoFit'
     },
     {
-        name: "New Shape2",
+        name: "Spread Diamonds",
         ballSize: 0.2,
         spacing: 1.0,
         colorShift: 0.5,
         centerGradient: 5.0,
         opacity: 1.0,
-        lightIntensity: 0.1,
+        lightIntensity: 0.5,
         centerLight: 0.2,
         uiOpacity: 0.3,
         shape: 'diamond',
@@ -206,13 +193,13 @@ const PRESETS = [
         view: 'isoFit'
     },
     {
-        name: "New Shape2 Center",
+        name: "Spread Diamonds",
         ballSize: 0.2,
         spacing: 1.0,
         colorShift: 0.5,
         centerGradient: 5.0,
         opacity: 1.0,
-        lightIntensity: 0.1,
+        lightIntensity: 0.5,
         centerLight: 0.2,
         uiOpacity: 0.3,
         shape: 'diamond',

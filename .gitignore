@@ -1,0 +1,12 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local dev server
+__pycache__/
