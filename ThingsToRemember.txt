@@ -1,6 +1,12 @@
+
+#Ship to Github
 cd C:\Users\ZachH\OneDrive\Desktop\Experime\ColorBlockTool
 git init
 git add .
 git commit -m "Added Hello World comment, created technical specifications, start server script, and updated index.html and script.js"
 git remote add origin https://github.com/zahavera/ColorBlockTool.git
 git push -u origin main
+
+#Retrieve Head from Github
+git fetch origin
+git reset --hard origin/main

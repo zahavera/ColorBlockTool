@@ -1,0 +1,10 @@
+Date: 22Feb2025
+Time: 13:20
+
+Hey can you see and understand the features of this code?
+
+it is a tool that is ran on my github repositories page.
+
+there is also a way for me to host it locally so we dont have to push it to the repository to test every time.
+
+but i want it to look good on mobile so we will have to push it to test it on mobile eventually.

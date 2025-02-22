@@ -3,7 +3,7 @@
 <head>
     <title>Color Block Tool</title>
     <!-- Define the app version -->
-    <script>const APP_VERSION = "2.17.0";</script>
+    <script>const APP_VERSION = "2.18.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -470,6 +470,30 @@
         .floating-view-controls button:hover {
             background: #555;
         }
+
+        /* Update share buttons style to match view buttons */
+        .share-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: flex-start;
+            width: 170px;
+        }
+        
+        .share-buttons button {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 5px;
+            font-size: 20px;  /* Larger font for emojis */
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .share-buttons button:hover {
+            background: #555;
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
@@ -639,6 +663,17 @@
                     <button onclick="params.resetView()">Iso</button>
                     <button onclick="params.centerView()">Center</button>
                     <button onclick="params.fitView()">Fit</button>
+                </div>
+            </div>
+
+            <!-- Add new Share control group -->
+            <div class="control-group">
+                <span class="icon">📤</span>
+                <label>Share</label>
+                <div class="share-buttons">
+                    <button onclick="copyConfig()">📋</button>
+                    <button onclick="pasteConfig()">📝</button>
+                    <button onclick="saveAsPreset()">💾</button>
                 </div>
             </div>
         </div>

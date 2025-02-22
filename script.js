@@ -342,8 +342,19 @@ function init() {
 
     // Add reset handler
     document.getElementById('resetDefaults').addEventListener('click', function() {
+        if (PRESETS.length === 0) return;
+    
         currentPreset = (currentPreset + 1) % PRESETS.length;
         const preset = PRESETS[currentPreset];
+        
+        // Keep drawer button text simple
+        this.textContent = 'Presets';
+        
+        // Update floating button text with details
+        const floatingPresetButton = document.querySelector('.main-buttons button:nth-child(2)');
+        if (floatingPresetButton) {
+            floatingPresetButton.textContent = `${preset.name} (${currentPreset + 1}/${PRESETS.length})`;
+        }
         
         // Apply preset to HTML elements
         Object.entries(preset).forEach(([id, value]) => {
@@ -368,6 +379,14 @@ function init() {
             params.centerView();
         }
     });
+
+    // Initialize preset button text
+    document.getElementById('resetDefaults').textContent = 'Presets';
+    const firstPreset = PRESETS[currentPreset];
+    const floatingPresetButton = document.querySelector('.main-buttons button:nth-child(2)');
+    if (floatingPresetButton) {
+        floatingPresetButton.textContent = `${firstPreset.name} (${currentPreset + 1}/${PRESETS.length})`;
+    }
 }
 
 function shiftColor(color) {
@@ -733,5 +752,157 @@ window.randomizeControls = function() {
     updateShapes();
     updateMaterial();
 };
+
+// Add these functions after the existing code
+function getConfiguration() {
+    return {
+        name: "Custom Configuration",
+        settings: {
+            ballSize: params.ballSize,
+            spacing: params.spacing,
+            colorShift: document.getElementById('colorShift').value,
+            centerGradient: params.centerGradient,
+            opacity: params.interiorOpacity,
+            lightIntensity: params.lightIntensity,
+            centerLight: params.centerLightIntensity,
+            shape: params.shape,
+            material: params.material,
+            view: 'isoFit',
+            bgColor: {
+                r: parseFloat(document.getElementById('bgRed').value),
+                g: parseFloat(document.getElementById('bgGreen').value),
+                b: parseFloat(document.getElementById('bgBlue').value),
+                brightness: parseFloat(document.getElementById('bgBright').value)
+            }
+        }
+    };
+}
+
+function applyConfiguration(config) {
+    if (!config || !config.settings) {
+        console.error('Invalid configuration format');
+        return false;
+    }
+
+    try {
+        const s = config.settings;
+        
+        // Update all controls
+        document.getElementById('ballSize').value = s.ballSize;
+        document.getElementById('spacing').value = s.spacing;
+        document.getElementById('colorShift').value = s.colorShift;
+        document.getElementById('centerGradient').value = s.centerGradient;
+        document.getElementById('opacity').value = s.opacity;
+        document.getElementById('lightIntensity').value = s.lightIntensity;
+        document.getElementById('centerLight').value = s.centerLight;
+        document.getElementById('shape').value = s.shape;
+        document.getElementById('material').value = s.material;
+        
+        // Update background color
+        if (s.bgColor) {
+            document.getElementById('bgRed').value = s.bgColor.r;
+            document.getElementById('bgGreen').value = s.bgColor.g;
+            document.getElementById('bgBlue').value = s.bgColor.b;
+            document.getElementById('bgBright').value = s.bgColor.brightness;
+        }
+
+        // Trigger updates
+        updateParams();
+        return true;
+    } catch (error) {
+        console.error('Error applying configuration:', error);
+        return false;
+    }
+}
+
+function copyConfig() {
+    const config = getConfiguration();
+    const configString = JSON.stringify(config, null, 2);
+    navigator.clipboard.writeText(configString).then(() => {
+        // Show subtle visual feedback
+        const copyButton = document.querySelector('button[onclick="copyConfig()"]');
+        const originalText = copyButton.textContent;
+        copyButton.textContent = '✓';  // Changed feedback to just checkmark
+        copyButton.style.backgroundColor = '#2d6a4f';
+        setTimeout(() => {
+            copyButton.textContent = '📋';  // Reset to clipboard icon
+            copyButton.style.backgroundColor = '';
+        }, 1000);
+    }).catch(err => {
+        console.error('Failed to copy configuration:', err);
+    });
+}
+
+function pasteConfig() {
+    navigator.clipboard.readText().then(text => {
+        try {
+            const config = JSON.parse(text);
+            if (applyConfiguration(config)) {
+                const pasteButton = document.querySelector('button[onclick="pasteConfig()"]');
+                pasteButton.textContent = '✓';
+                pasteButton.style.backgroundColor = '#2d6a4f';
+                setTimeout(() => {
+                    pasteButton.textContent = '📝';
+                    pasteButton.style.backgroundColor = '';
+                }, 1000);
+            }
+        } catch (error) {
+            console.error('Error parsing configuration:', error);
+        }
+    }).catch(err => {
+        console.error('Clipboard read failed:', err);
+    });
+}
+
+function saveAsPreset() {
+    const config = getConfiguration();
+    const name = prompt('Enter preset name:', config.name);
+    if (!name) return;
+    
+    // Create proper preset structure with all required fields
+    const preset = {
+        name: name,
+        ballSize: params.ballSize,
+        spacing: params.spacing,
+        colorShift: document.getElementById('colorShift').value,
+        centerGradient: params.centerGradient,
+        opacity: params.interiorOpacity,
+        lightIntensity: params.lightIntensity,
+        centerLight: params.centerLightIntensity,
+        shape: params.shape,
+        material: params.material,
+        view: 'isoFit',
+        uiOpacity: parseFloat(document.getElementById('uiOpacity').value) || 0.5
+    };
+
+    // Add to end of presets array
+    PRESETS.push(preset);
+    
+    // Update currentPreset to point to new preset
+    currentPreset = PRESETS.length - 1;
+    
+    // Keep drawer button text simple
+    document.getElementById('resetDefaults').textContent = 'Presets';
+    
+    // Update floating button with details
+    const floatingPresetButton = document.querySelector('.main-buttons button:nth-child(2)');
+    if (floatingPresetButton) {
+        floatingPresetButton.textContent = `${name} (${currentPreset + 1}/${PRESETS.length})`;
+    }
+    
+    // Show feedback
+    const saveButton = document.querySelector('button[onclick="saveAsPreset()"]');
+    const originalText = saveButton.textContent;
+    saveButton.textContent = '✓';  // Changed feedback to just checkmark
+    saveButton.style.backgroundColor = '#2d6a4f';
+    setTimeout(() => {
+        saveButton.textContent = '💾';  // Reset to save icon
+        saveButton.style.backgroundColor = '';
+    }, 1000);
+}
+
+// Also update preset button text to show current preset
+const presetButton = document.getElementById('resetDefaults');
+presetButton.textContent = `Preset: ${name}`;
 
 init();
