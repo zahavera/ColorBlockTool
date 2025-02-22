@@ -10,3 +10,12 @@ git push -u origin main
 #Retrieve Head from Github
 git fetch origin
 git reset --hard origin/main
+
+
+If you're interested in further testing/improving the tool, there are other areas we could look at:
+
+Material transitions
+View transitions
+Mobile performance
+Memory management
+Configuration sharing improvements

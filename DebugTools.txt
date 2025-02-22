@@ -1,0 +1,22 @@
+Lights Not Working:
+window.debugLights();
+window.resetLights();
+// Check if lights are in scene
+console.log(scene.children.filter(c => c.isLight).length);
+Materials Wrong:
+window.debugMaterials();
+// Check specific object
+let pos = {x: 12, y: 12, z: 12};
+let idx = pos.x + pos.y*25 + pos.z*25*25;
+console.log(spheres[idx].material);
+Controls Not Synced:
+window.validateParams();
+// Watch for changes
+let lastState = JSON.stringify(getConfiguration());
+setInterval(() => {
+    let newState = JSON.stringify(getConfiguration());
+    if (newState !== lastState) {
+        console.log('State changed:', JSON.parse(newState));
+        lastState = newState;
+    }
+}, 1000);

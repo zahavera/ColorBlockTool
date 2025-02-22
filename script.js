@@ -127,6 +127,19 @@ const colors = {
 // Move PRESETS to top of file, before init()
 const PRESETS = [
     {
+        name: "Default",
+        ballSize: 0.3,
+        spacing: 0.3,
+        colorShift: 0.5,
+        centerGradient: 2.0,
+        opacity: 1.0,
+        lightIntensity: 0.5,  // Match initial state
+        centerLight: 1.0,
+        shape: 'box',
+        material: 'standard',
+        view: 'isoFit'
+    },
+    {
         name: "New Shape1",
         ballSize: 0.3,
         spacing: 0.3,
@@ -243,7 +256,8 @@ function init() {
             opacity: document.getElementById('opacity'),
             shape: document.getElementById('shape'),
             material: document.getElementById('material'),
-            centerLight: document.getElementById('centerLight')
+            centerLight: document.getElementById('centerLight'),
+            lightIntensity: document.getElementById('lightIntensity')
         };
 
         // Set initial values
@@ -256,6 +270,7 @@ function init() {
         inputs.shape.value = params.shape;
         inputs.material.value = params.material;
         inputs.centerLight.value = params.centerLightIntensity;
+        inputs.lightIntensity.value = params.lightIntensity;
 
         // Add listeners
         inputs.ballSize.addEventListener('input', e => {
@@ -307,6 +322,11 @@ function init() {
             updateMaterial();
         });
         inputs.centerLight.addEventListener('input', updateCenterLight);
+        inputs.lightIntensity.addEventListener('input', e => {
+            const intensity = parseFloat(e.target.value);
+            params.lightIntensity = intensity;
+            updateLightIntensity();
+        });
     }
 
     setupControls();
@@ -317,11 +337,11 @@ function init() {
 
     // Remove the old lighting code and replace with this:
     // Base ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-    scene.add(ambientLight);
+    params.ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+    scene.add(params.ambientLight);
 
-    // Add corner lights
-    cornerLights = [
+    // Store corner lights in params instead of global
+    params.cornerLights = cornerLights = [
         // Front corners
         { pos: [1, 1, 1], color: 0xCCCCCC },    // Top Front Right
         { pos: [-1, 1, 1], color: 0xCCCCCC },   // Top Front Left
@@ -347,31 +367,20 @@ function init() {
         currentPreset = (currentPreset + 1) % PRESETS.length;
         const preset = PRESETS[currentPreset];
         
-        // Keep drawer button text simple
-        this.textContent = 'Presets';
-        
-        // Update floating button text with details
-        const floatingPresetButton = document.querySelector('.main-buttons button:nth-child(2)');
-        if (floatingPresetButton) {
-            floatingPresetButton.textContent = `${preset.name} (${currentPreset + 1}/${PRESETS.length})`;
-        }
-        
-        // Apply preset to HTML elements
+        // First apply all control values
         Object.entries(preset).forEach(([id, value]) => {
             const element = document.getElementById(id);
             if (element) {
                 element.value = value;
                 const numInput = document.getElementById(id + 'Num');
                 if (numInput) numInput.value = value;
-                element.dispatchEvent(new Event('change'));
-                element.dispatchEvent(new Event('input'));  // Add this line
             }
         });
 
-        // Update all THREE.js parameters and visuals
-        updateParams();
+        // Then update all parameters at once
+        updateParams();  // This will handle all updates including lighting
 
-        // Apply view settings
+        // Apply view settings last
         if (preset.view === 'isoFit') {
             params.resetView();
             params.fitView();
@@ -541,7 +550,10 @@ function updateMaterial() {
                         polygonOffset: true,
                         polygonOffsetFactor: -2,
                         polygonOffsetUnits: -2,
-                        alphaToCoverage: true
+                        alphaToCoverage: true,
+                        transmission: isInt && params.interiorOpacity < 0.3 ? 0.8 : 0,  // Add transmission for low opacity
+                        metalness: Math.min(properties.metalness, 0.5),  // Limit metalness
+                        roughness: Math.max(properties.roughness, 0.1)   // Ensure some roughness
                     });
                     
                     // Update material and color
@@ -595,15 +607,20 @@ function updateColors() {
 function updateOpacity() {
     let index = 0;
     for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {   // Fixed: was using x in condition
-            for(let z = 0; z < 25; z++) {
+        for(let y = 0;  y < 25; y++) {   // Fixed: was using x in condition
+            for(let z = 0;  z < 25; z++) {
                 const sphere = spheres[index++]; 
                 if (isInterior(x, y, z)) {
+                    // Update transparency properties for better light penetration
                     sphere.material.opacity = params.interiorOpacity;
+                    sphere.material.transparent = params.interiorOpacity < 1;
+                    sphere.material.depthWrite = params.interiorOpacity >= 0.5;
+                    sphere.material.transmission = params.interiorOpacity < 0.3 ? 0.8 : 0;
                 }
             }
         }
     }
+    renderer.render(scene, camera);
 }
 
 // Update updateShapes to be more efficient
@@ -686,12 +703,20 @@ function updateParams() {
     updateCenterLight();
 }
 
+// Update function to use global cornerLights or params.cornerLights
 function updateLightIntensity() {
     const intensity = parseFloat(document.getElementById('lightIntensity').value);
     params.lightIntensity = intensity;
-    cornerLights.forEach(light => {
+    
+    params.cornerLights.forEach(light => {
         light.intensity = intensity;
     });
+    
+    if (params.ambientLight) {
+        params.ambientLight.intensity = intensity * 0.5;
+    }
+
+    if (renderer) renderer.render(scene, camera);
 }
 
 function updateCenterLight() {
@@ -808,6 +833,13 @@ function applyConfiguration(config) {
 
         // Trigger updates
         updateParams();
+        
+        // Explicitly update lighting
+        if (typeof s.lightIntensity === 'number') {
+            params.lightIntensity = s.lightIntensity;
+            updateLightIntensity();
+        }
+        
         return true;
     } catch (error) {
         console.error('Error applying configuration:', error);
