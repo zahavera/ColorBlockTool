@@ -168,12 +168,12 @@ const PRESETS = [
     {
         name: "New Preset",
         ballSize: 0.5,
-        spacing: 5,
-        colorShift: 0,
-        centerGradient: 0,
+        spacing: 1,
+        colorShift: 0.5,
+        centerGradient: 2,
         opacity: 0,
-        lightIntensity: 0,
-        centerLight: 0,
+        lightIntensity: 1,
+        centerLight: .3,
         shape: 'sphere',
         material: 'standard',
         view: 'isoFit'
