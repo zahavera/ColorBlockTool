@@ -166,6 +166,19 @@ const PRESETS = [
         view: 'isoFit'
     },
     {
+        name: "New Preset",
+        ballSize: 0.5,
+        spacing: 5,
+        colorShift: 0,
+        centerGradient: 0,
+        opacity: 0,
+        lightIntensity: 0,
+        centerLight: 0,
+        shape: 'sphere',
+        material: 'standard',
+        view: 'isoFit'
+    },
+    {
         name: "New Shape2",
         ballSize: 0.2,
         spacing: 1.0,
