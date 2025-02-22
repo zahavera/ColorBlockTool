@@ -1,0 +1,57 @@
+# Summary of Changes
+
+## 1. Added "Hello World" comment to script.js
+* **File:** /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/script.js
+* **Change:** Added a comment `// Hello World` at the top of the file.
+* **Reason:** To add a simple "Hello World" comment as requested.
+
+## 2. Created technical_specifications01.txt
+* **File:** /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/technical_specifications01.txt
+* **Content:** Detailed technical requirements for the grid system, object management, shape system, color system, material system, and control system.
+* **Reason:** To document the technical specifications of the Color Block Tool project.
+
+## 3. Created start_server.bat
+* **File:** /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/start_server.bat
+* **Content:**
+    ```bat
+    REM filepath: /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/start_server.bat
+    @echo off
+    echo Starting local server...
+    python -m http.server 8000
+    ```
+* **Reason:** To create a batch file for starting a local server for testing the application.
+
+## 4. Updated Changes.txt
+* **File:** /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/Changes.txt
+* **Content:** Added detailed records of the changes made to the Color Block Tool project, including code changes, reasons for those changes, and relevant information.
+* **Reason:** To provide a detailed record of the changes made to the project for both human readability and future conversations with an AI.
+
+## 5. Updated index.html
+* **File:** /C:/Users/ZachH/OneDrive/Desktop/Experime/ColorBlockTool/index.html
+* **Changes:**
+    * Added floating view controls at the top.
+    * Updated styles for the controls panel and individual control groups.
+    * Added control bar for Random/Reset buttons.
+    * Added tab buttons for switching between control sections.
+    * Added color controls section.
+    * Added visual controls section.
+    * Added scene controls section.
+    * Added version information section.
+    * Added floating controls at the bottom.
+    * Added JavaScript for handling UI interactions, background color control, undo system, and randomize controls.
+* **Reason:** To improve the user interface and functionality of the Color Block Tool application.
+
+# Better Method of Tracking Information
+
+* **Version Control System (Git):** Using Git with a platform like GitHub, GitLab, or Bitbucket is the most professional and effective way to track code changes. Git allows you to:
+    * Track every change made to the code.
+    * Write commit messages explaining the changes.
+    * Create branches for different features or bug fixes.
+    * Collaborate with other developers.
+    * Easily revert to previous versions of the code.
+* **Commit Messages:** When using Git, write clear and concise commit messages that explain the purpose of each change. This will make it easier to understand the history of the code.
+* **Issue Tracking:** Use an issue tracker (e.g., GitHub Issues, Jira) to track bugs, feature requests, and other tasks. This will help you organize your work and keep track of the progress of the project.
+
+This summary provides a detailed record of the changes made to the Color Block Tool project in this session. It includes the code changes, the reasons for those changes, and any other relevant information.
+
+Let me know if you need any further assistance!
