@@ -128,9 +128,6 @@ const colors = {
 const PRESETS = [
     {
         name: "New Shape1",
-        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
-        // Visual: ballSize(.3), spacing(.3), opacity(0), lightIntensity(.1), centerLight(0), uiOpacity(0)
-        // Scene: shape(Box), material(Standard)
         ballSize: 0.3,
         spacing: 0.3,
         colorShift: 0.5,
@@ -144,9 +141,6 @@ const PRESETS = [
     },
     {
         name: "New Shape1 Center",
-        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
-        // Visual: ballSize(.3), spacing(.3), opacity(0), lightIntensity(.1), centerLight(0), uiOpacity(0)
-        // Scene: shape(Box), material(Standard)
         ballSize: 0.3,
         spacing: 0.3,
         colorShift: 0.5,
@@ -160,9 +154,6 @@ const PRESETS = [
     },
     {
         name: "Metal Spheres",
-        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
-        // Visual: ballSize(.5), spacing(.8), opacity(1), lightIntensity(.2), centerLight(5), uiOpacity(0)
-        // Scene: shape(Sphere), material(Metal)
         ballSize: 0.5,
         spacing: 0.8,
         colorShift: 0.5,
@@ -176,9 +167,6 @@ const PRESETS = [
     },
     {
         name: "New Shape2",
-        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
-        // Visual: ballSize(.2), spacing(1), opacity(1), lightIntensity(.1), centerLight(.2), uiOpacity(.3)
-        // Scene: shape(Diamond), material(Plastic)
         ballSize: 0.2,
         spacing: 1.0,
         colorShift: 0.5,
@@ -193,9 +181,6 @@ const PRESETS = [
     },
     {
         name: "New Shape2 Center",
-        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
-        // Visual: ballSize(.2), spacing(1), opacity(1), lightIntensity(.1), centerLight(.2), uiOpacity(.3)
-        // Scene: shape(Diamond), material(Plastic)
         ballSize: 0.2,
         spacing: 1.0,
         colorShift: 0.5,
