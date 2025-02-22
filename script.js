@@ -167,13 +167,13 @@ const PRESETS = [
     },
     {
         name: "New Preset",
-        ballSize: 0.23,
+        ballSize: 0.26,
         spacing: 1,
         colorShift: 0.2,
         centerGradient: 2,
         opacity: 0,
         lightIntensity: 1,
-        centerLight: 2,
+        centerLight: 5,
         shape: 'sphere',
         material: 'standard',
         view: 'isoFit'
