@@ -173,7 +173,7 @@ const PRESETS = [
         centerGradient: 2,
         opacity: 0,
         lightIntensity: 1,
-        centerLight: .3,
+        centerLight: 2,
         shape: 'sphere',
         material: 'standard',
         view: 'isoFit'
