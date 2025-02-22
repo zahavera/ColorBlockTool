@@ -364,6 +364,12 @@ function init() {
             }
         });
 
+        // Update preset button text
+        const floatingPresetButton = document.querySelector('.main-buttons button:nth-child(2)');
+        if (floatingPresetButton) {
+            floatingPresetButton.textContent = `${preset.name} (${currentPreset + 1}/${PRESETS.length})`;
+        }
+
         // Then update all parameters at once
         updateParams();  // This will handle all updates including lighting
 
