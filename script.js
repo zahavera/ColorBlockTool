@@ -59,12 +59,12 @@ let params = {
 
 // Update SHAPES with lower poly counts
 const SHAPES = {
-    sphere: new THREE.SphereGeometry(1, 4, 3),  // Reduced segments further
+    sphere: new THREE.SphereGeometry(1, 16, 12),  // Increased segments
     diamond: new THREE.OctahedronGeometry(1, 0),
     star: new THREE.TetrahedronGeometry(1, 0),
     box: new THREE.BoxGeometry(1, 1, 1),
     hex: new THREE.CylinderGeometry(1, 1, 1, 6), // Hexagonal prism
-    cross: new THREE.BoxGeometry(1.5, 0.5, 0.5)  // Revert to original cross dimensions
+    cross: new THREE.BoxGeometry(1.5, 0.5, 0.5) // Revert to original cross dimensions
 };
 
 // Add material definitions
@@ -127,28 +127,86 @@ const colors = {
 // Move PRESETS to top of file, before init()
 const PRESETS = [
     {
-        // Default preset
+        name: "New Shape1",
+        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
+        // Visual: ballSize(.3), spacing(.3), opacity(0), lightIntensity(.1), centerLight(0), uiOpacity(0)
+        // Scene: shape(Box), material(Standard)
         ballSize: 0.3,
         spacing: 0.3,
         colorShift: 0.5,
-        centerGradient: 3.0,
+        centerGradient: 5.0,
         opacity: 0.0,
+        lightIntensity: 0.1,
+        centerLight: 0.0,
         shape: 'box',
-        material: 'plastic',
-        lightIntensity: 0.5,
-        centerLight: 1.0
+        material: 'standard',
+        view: 'isoFit'
     },
     {
-        // Metal spheres preset
+        name: "New Shape1 Center",
+        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
+        // Visual: ballSize(.3), spacing(.3), opacity(0), lightIntensity(.1), centerLight(0), uiOpacity(0)
+        // Scene: shape(Box), material(Standard)
+        ballSize: 0.3,
+        spacing: 0.3,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 0.0,
+        lightIntensity: 0.1,
+        centerLight: 0.0,
+        shape: 'box',
+        material: 'standard',
+        view: 'center'
+    },
+    {
+        name: "Metal Spheres",
+        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
+        // Visual: ballSize(.5), spacing(.8), opacity(1), lightIntensity(.2), centerLight(5), uiOpacity(0)
+        // Scene: shape(Sphere), material(Metal)
         ballSize: 0.5,
         spacing: 0.8,
         colorShift: 0.5,
         centerGradient: 5.0,
         opacity: 1.0,
+        lightIntensity: 0.2,
+        centerLight: 5.0,
         shape: 'sphere',
         material: 'metal',
-        lightIntensity: 0.2,
-        centerLight: 5.0
+        view: 'isoFit'
+    },
+    {
+        name: "New Shape2",
+        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
+        // Visual: ballSize(.2), spacing(1), opacity(1), lightIntensity(.1), centerLight(.2), uiOpacity(.3)
+        // Scene: shape(Diamond), material(Plastic)
+        ballSize: 0.2,
+        spacing: 1.0,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 1.0,
+        lightIntensity: 0.1,
+        centerLight: 0.2,
+        uiOpacity: 0.3,
+        shape: 'diamond',
+        material: 'plastic',
+        view: 'isoFit'
+    },
+    {
+        name: "New Shape2 Center",
+        // Colors: colorShift(.5), centerGradient(5), bgRed(0), bgGreen(0), bgBlue(0), bgBright(0)
+        // Visual: ballSize(.2), spacing(1), opacity(1), lightIntensity(.1), centerLight(.2), uiOpacity(.3)
+        // Scene: shape(Diamond), material(Plastic)
+        ballSize: 0.2,
+        spacing: 1.0,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 1.0,
+        lightIntensity: 0.1,
+        centerLight: 0.2,
+        uiOpacity: 0.3,
+        shape: 'diamond',
+        material: 'plastic',
+        view: 'center'
     }
 ];
 
@@ -303,6 +361,14 @@ function init() {
 
         // Update all THREE.js parameters and visuals
         updateParams();
+
+        // Apply view settings
+        if (preset.view === 'isoFit') {
+            params.resetView();
+            params.fitView();
+        } else if (preset.view === 'center') {
+            params.centerView();
+        }
     });
 }
 
@@ -446,7 +512,7 @@ function updateMaterial() {
                     index++;
                     continue;
                 }
-                const object = spheres[index++];
+                const object = spheres[index++]; 
                 if (object.material) {
                     const isInt = isInterior(x, y, z);
                     const material = new THREE.MeshPhysicalMaterial({
@@ -479,9 +545,13 @@ function isOnSurface(x, y, z) {
 function updateGridPositions() {
     let index = 0;
     for(let x = 0; x < 25; x++) {
-        for(let y = 0; y < 25; y++) {  // Fixed: was using x < 25
-            for(let z = 0; z < 25; z++) {  // Fixed: was using x < 25
-                const sphere = spheres[index++];
+        for(let y = 0; y < 25; y++) {
+            for(let z = 0; z < 25; z++) {
+                const sphere = spheres[index++]; 
+                if (!sphere) {
+                    console.warn(`Sphere is undefined at index ${index-1} (x=${x}, y=${y}, z=${z})`);
+                    continue;
+                }
                 sphere.position.set(
                     (x - 12) * params.spacing,
                     (y - 12) * params.spacing,
@@ -498,7 +568,7 @@ function updateColors() {
     for(let x = 0; x < 25; x++) {
         for(let y = 0;  y < 25; y++) {   // Fixed: was using x < 25
             for(let z = 0;  z < 25; z++) {
-                const sphere = spheres[index++];
+                const sphere = spheres[index++]; 
                 sphere.material.color = lerp3Colors(x, y, z);
             }
         }
@@ -510,7 +580,7 @@ function updateOpacity() {
     for(let x = 0; x < 25; x++) {
         for(let y = 0; y < 25; y++) {   // Fixed: was using x in condition
             for(let z = 0; z < 25; z++) {
-                const sphere = spheres[index++];
+                const sphere = spheres[index++]; 
                 if (isInterior(x, y, z)) {
                     sphere.material.opacity = params.interiorOpacity;
                 }
@@ -521,20 +591,40 @@ function updateOpacity() {
 
 // Update updateShapes to be more efficient
 function updateShapes() {
-    // Remove all existing shapes
-    spheres.forEach(shape => {
-        if (shape.children) {
-            shape.children.forEach(child => {
-                if (child.geometry) child.geometry.dispose();
-                if (child.material) child.material.dispose();
-            });
+    // Iterate through all spheres in the grid
+    let index = 0;
+    for(let x = 0; x < 25; x++) {
+        for(let y = 0; y < 25; y++) {
+            for(let z = 0; z < 25; z++) {
+                // Get the current sphere
+                const sphere = spheres[index];
+                if (!sphere) {
+                    console.warn(`Sphere is undefined at index ${index} (x=${x}, y=${y}, z=${z})`);
+                    index++;
+                    continue;
+                }
+
+                let newGeometry;
+                // If at the center, use the octahedron geometry
+                if (x === 12 && y === 12 && z === 12) {
+                    newGeometry = new THREE.OctahedronGeometry(1, 0);
+                } 
+                // Otherwise, use the geometry defined by the shape parameter
+                else {
+                    newGeometry = SHAPES[params.shape];
+                }
+
+                // If the current geometry is different from the new geometry
+                if (sphere.geometry.type !== newGeometry.type) {
+                    // Dispose of the old geometry
+                    sphere.geometry.dispose();
+                    // Set the new geometry
+                    sphere.geometry = newGeometry
+                }
+                index++;
+            }
         }
-        if (shape.geometry) shape.geometry.dispose();
-        scene.remove(shape);
-    });
-    
-    spheres = [];
-    createGrid(); // Rebuild everything
+    }
 }
 
 function onWindowResize() {
@@ -603,18 +693,47 @@ function updateCenterLight() {
 
 // Fix undo functionality
 window.randomizeControls = function() {
-    const previousState = {
-        ballSize: document.getElementById('ballSize').value,
-        spacing: document.getElementById('spacing').value,
-        colorShift: document.getElementById('colorShift').value,
-        centerGradient: document.getElementById('centerGradient').value,
-        opacity: document.getElementById('opacity').value,
-        shape: document.getElementById('shape').value,
-        material: document.getElementById('material').value
-    };
+    // 1. Generate Random Values:
+    const randomSpacing = (Math.random() * 0.9 + 0.1).toFixed(2);
+    const maxSize = Math.min(randomSpacing, 3.0);
+    const randomSize = (Math.random() * (maxSize - 0.02) + 0.02).toFixed(2);
+    const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
+    const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
+    const randomColorShift = Math.random().toFixed(1);
+    const randomCenterGradient = (Math.random() * 4.9 + 0.1).toFixed(1);
+    const randomOpacity = Math.random().toFixed(1);
 
-    undoStack.push(previousState);
-    undoButton.disabled = false;
+    // 2. Update Input Elements:
+    document.getElementById('spacing').value = randomSpacing;
+    document.getElementById('ballSize').value = randomSize;
+    document.getElementById('colorShift').value = randomColorShift;
+    document.getElementById('centerGradient').value = randomCenterGradient;
+    document.getElementById('opacity').value = randomOpacity;
+
+    const shapeSelect = document.getElementById('shape');
+    shapeSelect.value = shapes[Math.floor(Math.random() * shapes.length)];
+    const materialSelect = document.getElementById('material');
+    materialSelect.value = materials[Math.floor(Math.random() * materials.length)];
+
+    // 3. Update Parameters:
+    // - Update the internal 'params' object with the new values.
+    // - This ensures that the Three.js scene is updated correctly.
+    params.spacing = parseFloat(randomSpacing);
+    params.ballSize = parseFloat(randomSize);
+    params.colorShift = calculateColor(parseFloat(randomColorShift));
+    params.centerGradient = parseFloat(randomCenterGradient);
+    params.interiorOpacity = parseFloat(randomOpacity);
+    params.shape = shapeSelect.value;
+    params.material = materialSelect.value;
+
+    // 4. Update Three.js Scene:
+    // - Call the functions that update the Three.js scene based on the new parameters.
+    // - This ensures that the scene is rendered correctly.
+    updateGridPositions();
+    updateColors();
+    updateOpacity();
+    updateShapes();
+    updateMaterial();
 };
 
 init();

@@ -2,11 +2,13 @@
 <html>
 <head>
     <title>Color Block Tool</title>
-    <script>const APP_VERSION = "2.13.0";</script>
+    <!-- Define the app version -->
+    <script>const APP_VERSION = "2.14.0";</script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
 
+        /* Styles for the controls panel */
         .controls {
             position: fixed;
             right: 0;  /* Changed from -25px */
@@ -70,6 +72,7 @@
             width: 630px;  /* Increased from 420px by 50% */
             background: rgba(0,0,0,var(--drawer-opacity, 0.95));
         }
+        /* Styles for individual control groups */
         .control-group {
             display: grid;
             grid-template-columns: 90px 120px 200px;  /* Further reduced from 90px 150px 250px */
@@ -478,19 +481,23 @@
         <button onclick="params.fitView()">Fit</button>
     </div>
 
+    <!-- Main controls panel -->
     <div class="controls">
+        <!-- Control bar for Random/Reset buttons -->
         <div class="control-bar">
             <button onclick="randomizeControls()">Random</button>
-            <button id="resetDefaults">Reset</button>
+            <button id="resetDefaults">Presets</button>
             <button id="undoButton" disabled>Undo</button>
         </div>
         
+        <!-- Tab buttons for switching between control sections -->
         <div class="tab-buttons">
             <button class="tab-button active" data-tab="color">Colors</button>
             <button class="tab-button" data-tab="visual">Visual</button>
             <button class="tab-button" data-tab="scene">Scene</button>
         </div>
         
+        <!-- Color controls section -->
         <div class="tab-content active" id="color-tab">
             <!-- Color related controls -->
             <div class="control-group">
@@ -547,6 +554,7 @@
             </div>
         </div>
 
+        <!-- Visual controls section -->
         <div class="tab-content" id="visual-tab">
             <!-- Size and spacing controls -->
             <div class="control-group">
@@ -599,6 +607,7 @@
             </div>
         </div>
 
+        <!-- Scene controls section -->
         <div class="tab-content" id="scene-tab">
             <!-- Shape, Material and View controls -->
             <div class="control-group">
@@ -634,12 +643,14 @@
             </div>
         </div>
 
+        <!-- Version information -->
         <div class="version-group">
             <span class="icon">ℹ️</span>
             <label>Version</label>
             <span id="versionNumber">Rev 2.7.8</span>
         </div>
     </div>
+    <!-- Add floating controls at the bottom -->
     <div class="floating-controls">
         <button class="color-toggle" onclick="toggleBackground()" id="bgToggle">White</button>
         <div class="main-buttons">
@@ -758,38 +769,6 @@
             // Initialize background color
             updateBackground();
 
-            // Add randomization function
-            window.randomizeControls = function() {
-                // Save state before random changes
-                saveState();
-                
-                // Pick random values
-                const shapes = ['sphere', 'diamond', 'star', 'box', 'cross'];
-                const materials = ['standard', 'metal', 'glass', 'plastic', 'glossy'];
-                
-                // Set numeric values
-                document.getElementById('ballSize').value = (Math.random() * 2.98 + 0.02).toFixed(2);
-                document.getElementById('spacing').value = (Math.random() * 0.9 + 0.1).toFixed(2);
-                document.getElementById('colorShift').value = Math.random().toFixed(1);
-                document.getElementById('centerGradient').value = (Math.random() * 4.9 + 0.1).toFixed(1);
-                document.getElementById('opacity').value = Math.random().toFixed(1);
-                
-                // Update shape first with change event
-                const shapeSelect = document.getElementById('shape');
-                shapeSelect.value = shapes[Math.floor(Math.random() * shapes.length)];
-                shapeSelect.dispatchEvent(new Event('change'));
-
-                // Then update material
-                const materialSelect = document.getElementById('material');
-                materialSelect.value = materials[Math.floor(Math.random() * materials.length)];
-                materialSelect.dispatchEvent(new Event('change'));
-
-                // Update numeric inputs last
-                ['ballSize', 'spacing', 'colorShift', 'centerGradient', 'opacity'].forEach(id => {
-                    document.getElementById(id).dispatchEvent(new Event('input'));
-                });
-            };
-
             // Add undo system
             const undoStack = [];
             const maxUndoStates = 20; // Store up to 20 states
@@ -905,8 +884,15 @@
                 updateBackground();
                 bgToggle.textContent = isCurrentlyBlack ? 'Black' : 'White';
             };
+
+            // Remove the duplicate randomizeControls definition
+            // Instead, add state management to the external one
+            const originalRandomizeControls = window.randomizeControls;
+            window.randomizeControls = function() {
+                saveState(); // Save state before changes
+                originalRandomizeControls(); // Call the core logic from script.js
+            };
         });
     </script>
 </body>
 </html>
-```
