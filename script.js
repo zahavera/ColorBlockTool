@@ -167,9 +167,9 @@ const PRESETS = [
     },
     {
         name: "New Preset",
-        ballSize: 0.25,
+        ballSize: 0.15,
         spacing: 1,
-        colorShift: 0.5,
+        colorShift: 0.2,
         centerGradient: 2,
         opacity: 0,
         lightIntensity: 1,
