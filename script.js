@@ -166,6 +166,19 @@ const PRESETS = [
         view: 'isoFit'
     },
     {
+        name: "MetalSph Center",
+        ballSize: 0.18,
+        spacing: 1,
+        colorShift: 0.5,
+        centerGradient: 5.0,
+        opacity: 1.0,
+        lightIntensity: 1.3,
+        centerLight: 0,
+        shape: 'sphere',
+        material: 'metal',
+        view: 'center'
+    },
+    {
         name: "ColorBalls",
         ballSize: 0.26,
         spacing: 1,
