@@ -153,17 +153,17 @@ const PRESETS = [
         view: 'center'
     },
     {
-        "name": "Color Wheel",
-          ballSize: 0.27,
-          spacing: 0.33,
-          colorShift: 0.2,
-          centerGradient: 5,
-          opacity: 0.8,
-          lightIntensity: 0,
-          centerLight: 5,
-          shape: "box",
-          material: "glossy",
-          view: "center"
+        name: "Color Wheel",
+        ballSize: 0.27,
+        spacing: 0.33,
+        colorShift: 0.2,
+        centerGradient: 5,
+        opacity: 0.8,
+        lightIntensity: 0,
+        centerLight: 5,
+        shape: "box",
+        material: "glossy",
+        view: "center"
     },
     {
         name: "Metal Spheres",
