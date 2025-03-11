@@ -80,7 +80,7 @@ const MATERIALS = {
     },
     metal: {
         metalness: 1.0,
-        roughness: 0.2,
+        roughness: 0.0,
         clearcoat: 0.5,
         transmission: 0.0,
         opacity: 1.0
@@ -89,7 +89,7 @@ const MATERIALS = {
         metalness: 0.0,
         roughness: 0.0,
         clearcoat: 1.0,
-        transmission: 0.9,
+        transmission: 1.0,
         opacity: 0.3
     },
     plastic: {
@@ -120,7 +120,7 @@ const colors = {
     RBL: new THREE.Color(0xFF0000), // Red
     FBR: new THREE.Color(0x00FF00), // Green
     RBR: new THREE.Color(0x000000), // Black
-    FTL: new THREE.Color(0x000000), // Changed to Black
+    FTL: new THREE.Color(0x000000), // Black
     CENTER: new THREE.Color(0xFFFFFF) // White (center)
 };
 
@@ -231,6 +231,20 @@ const PRESETS = [
         shape: 'diamond',
         material: 'plastic',
         view: 'center'
+    },
+    {
+        name: "Custom Config 1",
+        ballSize: 0.55,
+        spacing: 0.81,
+        colorShift: 0.7,
+        centerGradient: 0.7,
+        opacity: 0.0,
+        lightIntensity: 0.1,
+        centerLight: 4.5,
+        uiOpacity: 0.0,
+        shape: "diamond",
+        material: "glossy",
+        view: "center",
     }
 ];
 
