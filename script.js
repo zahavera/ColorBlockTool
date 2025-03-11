@@ -163,7 +163,7 @@ const PRESETS = [
         centerLight: 5,
         shape: "box",
         material: "glossy",
-        view: "center"
+        view: "isoFit"
     },
     {
         name: "Metal Spheres",
